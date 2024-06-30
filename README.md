@@ -1,6 +1,6 @@
 # ASU_FURI_Project
 
-Main Technology : Python, Numpy, Matplotlib, AWS, AWS-Textract, YOLO
+Main Technology : Python, Numpy, Matplotlib, AWS-S3, AWS-Textract, YOLO
 
 # YOLOv8
 
