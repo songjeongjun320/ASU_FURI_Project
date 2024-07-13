@@ -1,0 +1,12 @@
+<1>
+video 1/1 (241/441) C:\Users\frank\Desktop\CCTV\06272024\PHX-CKIN-101604-101621.mp4: 384x640 1 Container_Number, 84.4ms
+video 1/1 (242/441) C:\Users\frank\Desktop\CCTV\06272024\PHX-CKIN-101604-101621.mp4: 384x640 1 Container_Number, 93.6ms
+video 1/1 (243/441) C:\Users\frank\Desktop\CCTV\06272024\PHX-CKIN-101604-101621.mp4: 384x640 (no detections), 98.8ms
+video 1/1 (244/441) C:\Users\frank\Desktop\CCTV\06272024\PHX-CKIN-101604-101621.mp4: 384x640 (no detections), 108.2ms
+
+Build this func which Yolo doesn't detect the object anymore, force quit the detecting course.
+
+
+<2>
+In detect.py, find and revise the code which download the video file in detect/date/*.mp4
+-> We don't need to download the video twice
