@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Container Details</title>
+    <link rel="stylesheet" href="container_details_style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Container Details</h1>
+    </header>
+    <div class="search-container">
+      <input
+        type="text"
+        id="searchInput"
+        onkeyup="searchContainer()"
+        placeholder="Search for container number..."
+      />
+    </div>
+    <main>
+      <div class="container-details">
+        <div class="container-wrapper">
+          <div class="container-info">
+            <button class="back-button" onclick="goBack()">Back</button>
+            <!-- Container details will be dynamically added here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="container_details_script.js"></script>
+  </body>
+</html>

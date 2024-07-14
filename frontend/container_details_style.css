@@ -1,0 +1,87 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: maroon;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.container-details {
+  padding: 0 20px;
+}
+
+.container-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.container-info {
+  background-color: #f2f2f2;
+  border: 1px solid maroon;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: hidden; /* Ensure content doesn't overflow */
+  position: relative;
+}
+
+.container-info h2 {
+  color: maroon;
+  margin-top: 0;
+  font-size: 1.2em;
+  border-bottom: 1px solid maroon;
+  padding-bottom: 5px;
+}
+
+.container-info p {
+  margin: 5px 0;
+  font-size: 1em;
+}
+
+.picture-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px; /* Adjust margin top */
+}
+
+.picture-boxes img {
+  max-width: 100%; /* Ensure pictures don't overflow */
+  max-height: 300px;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+/* Style for back button */
+.back-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: maroon;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.search-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.search-container input[type="text"] {
+  width: 250px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}

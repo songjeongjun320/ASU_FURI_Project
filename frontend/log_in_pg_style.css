@@ -1,0 +1,59 @@
+body {
+  background-color: #fff; /* white background */
+}
+
+.maroon-block {
+  width: 33.33%;
+  height: 100vh;
+  background-color: #8b0a1a;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* No changes below this line */
+.login-container {
+  position: relative;
+  width: 300px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #8b0a1a; /* maroon border */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #8b0a1a; /* maroon text */
+}
+
+label {
+  color: #333; /* dark gray text */
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+input[type="submit"] {
+  background-color: #8b0a1a; /* maroon button */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #7a071a; /* darker maroon on hover */
+}
+.maroon-block {
+  width: 33.33%;
+  height: 100vh;
+  background-color: #8b0a1a;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
