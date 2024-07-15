@@ -36,6 +36,7 @@ import sys
 from pathlib import Path
 
 import torch
+import ocr
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -173,8 +174,13 @@ def run(
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         annotator.box_label(xyxy, label, color=colors(c, True))
-                    # if save_crop:
-                        save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                        file_path = save_dir / 'crops' / names[c] / f'{p.stem}.jpg'
+
+                        # if save_crop: then let's save the cropped img
+                        save_one_box(xyxy, imc, file_path, BGR=True)
+
+                        # If here return true mean, this func detected the valuable cntr number so return true
+                        ocr.check_img(file_path)
 
 
             # Stream results

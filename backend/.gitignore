@@ -261,3 +261,7 @@ fabric.properties
 
 # Educated by Jun
 train/
+
+# Company codes
+Company_List.txt
+
