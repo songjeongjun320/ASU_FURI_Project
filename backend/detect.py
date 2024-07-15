@@ -88,6 +88,7 @@ def run(
     is_url = source.lower().startswith(('rtsp://', 'rtmp://', 'http://', 'https://'))
     webcam = source.isnumeric() or source.endswith('.streams') or (is_url and not is_file)
     screenshot = source.lower().startswith('screen')
+
     if is_url and is_file:
         source = check_file(source)  # download
 
@@ -116,6 +117,10 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+    
+    # Whenever we get the valuable image, add 1 to stop_counter
+    stop_counter = 0
+
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -177,21 +182,26 @@ def run(
                         file_path = save_dir / 'crops' / names[c] / f'{p.stem}.jpg'
 
                         # if save_crop: then let's save the cropped img
-                        save_one_box(xyxy, imc, file_path, BGR=True)
+                        save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
                         # If here return true mean, this func detected the valuable cntr number so return true
-                        ocr.check_img(file_path)
-
+                        if ocr.check_img(file_path) == False:
+                            save_img = False
+                        else:
+                            stop_counter += 1
+                            # if we found 3 valuable pictures then we stop this process
+                            if stop_counter >= 4:
+                                return
 
             # Stream results
-            im0 = annotator.result()
-            if view_img:
-                if platform.system() == 'Linux' and p not in windows:
-                    windows.append(p)
-                    cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
-                    cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
-                cv2.imshow(str(p), im0)  # Showing the video detecting process
-                cv2.waitKey(1)  # 1 milli second
+            # im0 = annotator.result()
+            # if view_img:
+            #     if platform.system() == 'Linux' and p not in windows:
+            #         windows.append(p)
+            #         cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
+            #         cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
+            #     cv2.imshow(str(p), im0)  # Showing the video detecting process
+            #     cv2.waitKey(1)  # 1 milli second
 
             # Save results (image with detections)
             if save_img:

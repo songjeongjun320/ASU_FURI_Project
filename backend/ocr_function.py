@@ -28,7 +28,7 @@ def read(read_img, company_list):
     result_char = cntr_head_adjust(result_char, company_list)
     result_char = cntr_last_digit(result_char)
     
-    print("chars : {0}".format(chars) + "\nresult_chars : {0}".format(result_char))
+    print("chars : {0}".format(chars) + "result_chars : {0}".format(result_char))
     return chars, result_char
 
 
@@ -47,20 +47,20 @@ def cntr_head_adjust(cntr, company_list):
     if len(cntr_head) == 0:
         return ""
 
-    if cntr_head not in company_list:
-        adjusted_head = ''
-        if len(cntr_head) < 4:
-            adjusted_head = cntr_head_len_under4(cntr_head, company_list)
-            cntr = cntr.replace(cntr_head, adjusted_head)
-            return cntr
-        elif len(cntr_head) == 4:    
-            adjusted_head = cntr_head_len_4(cntr_head, company_list)
-            cntr = cntr.replace(cntr_head, adjusted_head)
-            return cntr
-        elif len(cntr_head) > 4:
-            adjusted_head = cntr_head_len_over4(cntr_head, company_list)
-            cntr = cntr.replace(cntr_head, adjusted_head)
-            return cntr
+    # if cntr_head not in company_list:
+    #     adjusted_head = ''
+    #     if len(cntr_head) < 4:
+    #         adjusted_head = cntr_head_len_under4(cntr_head, company_list)
+    #         cntr = cntr.replace(cntr_head, adjusted_head)
+    #         return cntr
+    #     elif len(cntr_head) == 4:    
+    #         adjusted_head = cntr_head_len_4(cntr_head, company_list)
+    #         cntr = cntr.replace(cntr_head, adjusted_head)
+    #         return cntr
+    #     elif len(cntr_head) > 4:
+    #         adjusted_head = cntr_head_len_over4(cntr_head, company_list)
+    #         cntr = cntr.replace(cntr_head, adjusted_head)
+    #         return cntr
 
     return cntr
 
@@ -537,7 +537,7 @@ def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possi
 
 
     ### CNTR_SIZE_CHECK ###
-    print('CNTR SIZE DETECTING')
+    print('\n< CNTR SIZE DETECTING >')
     cntr_size_list, cntr_size_list_x = cntr_size_contour(possible_contours, list_x, height, width, channel)
     cntr_size_result_idx = find_chars(cntr_size_list, possible_contours, MAX_DIAG_MULTIPLYER=2, MAX_ANGLE_DIFF=10.0, MIN_N_MATCHED=2)
     cntr_size_matched_result, black_copy = cntr_size_contour_draw(cntr_size_result_idx,cntr_size_list_x,\
