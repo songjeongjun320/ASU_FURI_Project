@@ -522,7 +522,7 @@ def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possi
     if len(result_chars) < 8 and switch_button == False: # Reverse option
         gr_bl_constant = gr_bl_constant_reverse
         reverse = True
-        return main(img2, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, True, company_list)
+        return main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, True, company_list)
 
     #### Result ####
     longest_idx = -1
