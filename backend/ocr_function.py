@@ -5,9 +5,10 @@ import pytesseract
 import math
 
 def show(name, img, show=0):
-    if show != 0:
-        plt.figure(figsize=(6,5)), plt.title(name), plt.get_current_fig_manager()
-        plt.imshow(img, cmap='gray'), plt.show(block=False), plt.pause(1), plt.close()
+    # if show != 0:
+    #     plt.figure(figsize=(6,5)), plt.title(name), plt.get_current_fig_manager()
+    #     plt.imshow(img, cmap='gray'), plt.show(block=False), plt.pause(1), plt.close()
+    pass
 
 def read(read_img, company_list):
     chars = pytesseract.image_to_string(read_img, lang='eng')
@@ -27,7 +28,7 @@ def read(read_img, company_list):
     result_char = cntr_head_adjust(result_char, company_list)
     result_char = cntr_last_digit(result_char)
     
-    print("chars : {0}".format(chars) + "result_chars : {0}".format(result_char))
+    print("chars : {0}".format(chars) + "\nresult_chars : {0}".format(result_char))
     return chars, result_char
 
 
