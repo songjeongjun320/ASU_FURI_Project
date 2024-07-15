@@ -1121,7 +1121,6 @@ imshow_ = cv2.imshow  # copy to avoid recursion errors
 
 
 def imread(path, flags=cv2.IMREAD_COLOR):
-    print("Here : ", path)
     return cv2.imdecode(np.fromfile(path, np.uint8), flags)
 
 
