@@ -194,6 +194,7 @@ def run(
                                 return
 
             # Stream results
+            # If you don't want to show the video comment this codes.
             # im0 = annotator.result()
             # if view_img:
             #     if platform.system() == 'Linux' and p not in windows:
