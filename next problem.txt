@@ -1,0 +1,2 @@
+Jun
+- Need to revise the logic for taking better quality pictures.
