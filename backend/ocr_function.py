@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import pytesseract
 import math
 
+img_path = ''
+
 def show(name, img, show=0):
     # if show != 0:
     #     plt.figure(figsize=(6,5)), plt.title(name), plt.get_current_fig_manager()
@@ -391,80 +393,12 @@ def erosion_detect(img_cropped, company_list, iteration):
     return result_char, img_eroded, chars
 
 
-def cntr_size_contour(possible_contours, list_x, height, width, channel):
-    x = 0 # First dot for the border line
-    y = 0
-    z = 0 # Second dot for the border line
-    w = 0
-
-    x = list_x[0][0]
-    y = list_x[0][2] + list_x[0][3]
-    z = list_x[-1][0] + list_x[-1][1]
-    w = list_x[-1][2] + list_x[-1][3]
-
-    # y = inclination*x + y_intercept
-
-    inclination = (y-w)/(x-z)  # inclination
-    # print(inclination)
-    y_intercept = y - inclination*x  # y_intercept
-    # y_w_intercept = y_intercept + inclination*width # when x = width, what is y.
-    # print(y_w_intercept)
-
-    cntr_size_list = []
-    cntr_size_list_x = []
-    cntr_size_temp_result = np.zeros((height, width, channel), dtype=np.uint8)
-
-    for d in possible_contours:
-        tmp = inclination * d['x'] + y_intercept
-        if d['y'] + d['h']/2  >= tmp:
-            # print("({0} + {1})/2 >= {2}".format(d['y'],d['h'],tmp))
-            cntr_size_list.append(d)
-            cntr_size_list_x.append([int(d['x']), int(d['w']), int(d['y']), int(d['h'])])
-            cv2.rectangle(cntr_size_temp_result, pt1=(d['x'], d['y']), pt2=(d['x']+d['w'], d['y']+d['h']), color=(255, 255, 255), thickness=1)
-    
-    show('CNTR_SIZE',cntr_size_temp_result)
-    return cntr_size_list, cntr_size_list_x
-
-
-def cntr_size_contour_draw(cntr_size_result_idx,cntr_size_list_x,black, possible_contours,height,width,channel):
-    cntr_size_matched_result = []
-    for idx_list in cntr_size_result_idx:
-        cntr_size_matched_result.append(np.take(possible_contours, idx_list))
-
-    cntr_size_temp_result = np.zeros((height,width,channel), dtype=np.uint8)
-
-    lowest_y = 0
-    highest_h = 0
-    for r in cntr_size_matched_result:
-        for d in r:
-            cv2.rectangle(cntr_size_temp_result,pt1=(d['x'], d['y']), pt2=(d['x']+d['w'], d['y']+d['h']), color=(255, 255, 255), thickness=1)
-            if lowest_y < d['y']:
-                lowest_y = d['y']
-            if d['h'] > highest_h:
-                highest_h = d['h']    
-    cv2.rectangle(black, pt1=(0,0), pt2=(width,lowest_y-5), color=(0,0,0), thickness=-1)
-    cv2.rectangle(black, pt1=(0,lowest_y + highest_h + 5), pt2=(width,height), color=(0,0,0), thickness=-1)
-    # cv2.rectangle(black, pt1=(0,cntr_size_list_x[0][2]), pt2=(cntr_size_list_x[0][0]-5,height), color=(0,0,0), thickness=-1)
-    
-    show('CNTR_SIZE_CONTOURS', cntr_size_temp_result)
-    return cntr_size_matched_result, black
-
-
-def cntr_size_adjust(cntr_size_chars):
-    result_chars = ''
-    for c in cntr_size_chars:
-        if ord('A') <= ord(c) <= ord('Z') or c.isdigit():
-            result_chars += c
-    result_chars = result_chars.replace('1','').replace('6','G')
-    result_chars = result_chars + "1"
-    return result_chars
-
-
 def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possibility, company_list):
     reverse = False
     switch_button = result_possibility # if True, can return // if False, can't return
     
-    img = cv2.imread(img)
+    img_path = img
+    img = cv2.imread(img_path)
     show('img_load', img)
 
     ##### Range for cut the IMG Load ####
@@ -508,7 +442,7 @@ def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possi
         # Re-Conduct, black-white-converse
         return main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, True, company_list)
     elif output == 0 and switch_button == True:
-        return "Can't Detect", "Can't Detect", reverse, "Can't Detect"
+        return "Can't Detect", "Can't Detect", reverse
 
     #### Rotate Plate Images ####
     img_cropped, plate_infos = rotate_plate_img(height, width, matched_result, black_copy)
@@ -523,7 +457,7 @@ def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possi
     if len(result_chars) < 8 and switch_button == False: # Reverse option
         gr_bl_constant = gr_bl_constant_reverse
         reverse = True
-        return main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, True, company_list)
+        return main(img_path, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, True, company_list)
 
     #### Result ####
     longest_idx = -1
@@ -533,21 +467,24 @@ def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possi
         final_img = cv2.rectangle(final_img, pt1=(info['x'], info['y']), pt2=(info['x']+info['w'], info['y']+info['h']), color=(255,0,0), thickness=2)
         show(result_chars, final_img)
     except:
-        return "Can't Detect", "Can't Detect", reverse, "Can't Detect"
-
-
-    ### CNTR_SIZE_CHECK ###
-    print('\n< CNTR SIZE DETECTING >')
-    cntr_size_list, cntr_size_list_x = cntr_size_contour(possible_contours, list_x, height, width, channel)
-    cntr_size_result_idx = find_chars(cntr_size_list, possible_contours, MAX_DIAG_MULTIPLYER=2, MAX_ANGLE_DIFF=10.0, MIN_N_MATCHED=2)
-    cntr_size_matched_result, black_copy = cntr_size_contour_draw(cntr_size_result_idx,cntr_size_list_x,\
-        black_copy, possible_contours, height, width, channel)
-    cntr_size_img_cropped, cntr_size_plate_infos = rotate_plate_img(height, width, cntr_size_matched_result, black_copy, \
-        PLATE_WIDTH_PADDING=3.0, PLATE_HEIGHT_PADDING=2.5, MIN_PLATE_RATIO=3, MAX_PLATE_RATIO=25)
-    cntr_size_chars, cntr_size_result_char = read(cntr_size_img_cropped, company_list)
-    cntr_size_result_char = cntr_size_adjust(cntr_size_chars)
-    print("CNTR SIZE : ", cntr_size_result_char)
-    show(cntr_size_result_char, cntr_size_img_cropped, 1)
+        return "Can't Detect", "Can't Detect", reverse
 
     ### Confirm Container Number ###
-    return chars, result_chars, reverse, cntr_size_result_char
+    return chars, result_chars, reverse
+
+
+def variance_of_laplacian(image):
+    # calculate image's laplacian
+    laplacian = cv2.Laplacian(image, cv2.CV_64F)
+    # variance of laplacian
+    variance = laplacian.var()
+    return variance
+
+
+# threshold is gonna be criteria. If the variance is smaller than threshold, it is blurry
+# The larger variance, the more clear images.
+def is_clear(image_path, threshold=100.0):
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    variance = variance_of_laplacian(image)
+    print("Image laplacian variance : ", variance)
+    return variance > threshold

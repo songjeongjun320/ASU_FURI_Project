@@ -20,7 +20,7 @@ SECRET_KEY = ''
 
 def check_img(file_path):
     company_list = company_list_download()
-    time.sleep(1.5)
+    time.sleep(2)
     output = read(file_path, company_list)
     return output
 
@@ -67,11 +67,11 @@ def read(f_name, company_list):
         h_max = 150
         h_min = 50
 
+    print("Here", f_name)
     if str(ext) == ".jpg":
-        chars, cntr_number, reverse, cntr_size = ocr_function.main(f_name, gr_bl_constant, gr_bl_constant_reverse,\
+        chars, cntr_number, reverse = ocr_function.main(f_name, gr_bl_constant, gr_bl_constant_reverse,\
                 h_max, h_min, result_possibility, company_list)                    
         print("Cntr_Number-- : " + cntr_number)
-        print("Cntr_Size-- : " + cntr_size)
         print("============================================\n")
 
         # if make_json(cntr_number, cntr_size, name, file_path, today, newfolder): success_detected = True
@@ -93,10 +93,14 @@ def read(f_name, company_list):
 
 
     # if container number is valuable number return true else false
-    if len(cntr_number) > 8:
+    if len(cntr_number) > 6:
         return True
     else:
         return False
+
+# if it is clear pic, return true else, return false
+def is_clear(img_path):
+    return ocr_function.is_clear(img_path)
 
 
 def make_json(result, cntr_size, name, file_path, now, newfolder):  # If right CntrNo detected, send .json file to YMS
@@ -107,7 +111,6 @@ def make_json(result, cntr_size, name, file_path, now, newfolder):  # If right C
         d['division'] = img_data[0]
         d['cameraPosition'] = img_data[1]
         d['cntrNo'] = result
-        d['cntrSize'] = cntr_size
         d['imgPath'] = newfolder + "/" + name + ".jpg"
         d['imgNm'] = name+".jpg"
         d['detectedTime'] = now.strftime(format)

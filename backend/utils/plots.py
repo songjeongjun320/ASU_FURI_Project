@@ -6,9 +6,11 @@ Plotting utils
 import contextlib
 import math
 import os
+import time
 from copy import copy
 from pathlib import Path
 from urllib.error import URLError
+import ocr
 
 import cv2
 import matplotlib
@@ -555,6 +557,14 @@ def save_one_box(xyxy, im, file=Path('im.jpg'), gain=1.02, pad=10, square=False,
     if save:
         file.parent.mkdir(parents=True, exist_ok=True)  # make directory
         f = str(increment_path(file).with_suffix('.jpg'))
+
         # cv2.imwrite(f, crop)  # save BGR, https://github.com/ultralytics/yolov5/issues/7007 chroma subsampling issue
         Image.fromarray(crop[..., ::-1]).save(f, quality=95, subsampling=0)  # save RGB
-    return crop
+
+        # if it is clear pic, save the image, if not delete the image.
+        if(ocr.is_clear(f)):
+            return crop, f, True
+        else:
+            os.remove(f)
+            return crop, f, False
+    return crop, f, False
