@@ -25,12 +25,15 @@ I'm excited to share a project I've been working on that combines the power of Y
 
 ---
 
-### Future Updates and Improvements
-
+### Future Updates and Improvements (As of 7/15/2024)
 - **Front-End Web Development**: Developing a user-friendly interface for viewing and managing the processed data.
 - **Optimized AWS Transactions**: Refining our process to upload only cleanly cropped images with correctly extracted information to reduce the number of transactions and ensure accuracy.
 - **Codebase Integration**: Integrating OCR and YOLO components for better efficiency and maintainability.
 - **YOLO Engine Optimization**: Enhancing our YOLO engine to stop processing after the target object has passed, reducing execution time and improving performance.
+- **Conduct Further Tests**: Ensuring the updated code is error-free.
+- **AWS Textract Integration**: Integrating AWS Textract to read the images and provide results in real-time.
+- **Cost Reduction**: Evaluating ways to reduce the number of AWS transactions to lower costs.
+
 
 This project not only automates a previously time-consuming manual process but also enhances accuracy and efficiency. It's a significant step towards smarter and more efficient logistics and supply chain management.
 
@@ -46,3 +49,23 @@ We chose YOLOv8 over the latest version, YOLOv10, because YOLOv8 offers a better
 - **Special-Channel Decoupled DownSampling**
 - **Rank-Guided Block Design**
 - **Lightweight Classification Heads**
+
+### Recent Updates (As of 7/15/2024)
+One of the major recent updates focuses on reducing the runtime of our code. Initially, the system would capture a large number of images (sometimes 30-40) whenever there was movement of a truck. Many of these images were unnecessary, being blurry or improperly cropped.
+
+We introduced a new function to check the clarity of an image using the variance of the Laplacian method:
+
+def is_clear(image_path, threshold=50.0):
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    variance = variance_of_laplacian(image)
+    return variance > threshold, variance
+
+def variance_of_laplacian(image):
+    # calculate image's laplacian
+    laplacian = cv2.Laplacian(image, cv2.CV_64F)
+    # variance of laplacian
+    variance = laplacian.var()
+    return variance
+    
+By applying this function, we filter out only the clearest images, selecting just three clean and usable images for storage. This not only results in a cleaner dataset but also reduces processing time by approximately half. As a result, we believe that the system can now update the website within 2 minutes when a container passes through the gate.
+
