@@ -34,7 +34,7 @@ I'm excited to share a project I've been working on that combines the power of Y
 - **AWS Textract Integration**: Integrating AWS Textract to read the images and provide results in real-time.
 - **Cost Reduction**: Evaluating ways to reduce the number of AWS transactions to lower costs.
 
-
+ 
 This project not only automates a previously time-consuming manual process but also enhances accuracy and efficiency. It's a significant step towards smarter and more efficient logistics and supply chain management.
 
 [Check out the video below for a detailed demonstration of the system in action. Your feedback and thoughts are most welcome!](https://www.linkedin.com/posts/junsong0602_ai-machinelearning-yolo-activity-7212526873040277504-xzzy?utm_source=share&utm_medium=member_desktop)
@@ -50,15 +50,17 @@ We chose YOLOv8 over the latest version, YOLOv10, because YOLOv8 offers a better
 - **Rank-Guided Block Design**
 - **Lightweight Classification Heads**
 
+---
+
 ### Recent Updates (As of 7/15/2024)
 One of the major recent updates focuses on reducing the runtime of our code. Initially, the system would capture a large number of images (sometimes 30-40) whenever there was movement of a truck. Many of these images were unnecessary, being blurry or improperly cropped.
 
 We introduced a new function to check the clarity of an image using the variance of the Laplacian method:
 
-def is_clear(image_path, threshold=50.0):
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    variance = variance_of_laplacian(image)
-    return variance > threshold, variance
+def is_clear(image_path, threshold=50.0):\n
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)\n
+    variance = variance_of_laplacian(image)\n
+    return variance > threshold, variance\n
 
 def variance_of_laplacian(image):
     # calculate image's laplacian
@@ -66,6 +68,13 @@ def variance_of_laplacian(image):
     # variance of laplacian
     variance = laplacian.var()
     return variance
-    
+
+---
+
 By applying this function, we filter out only the clearest images, selecting just three clean and usable images for storage. This not only results in a cleaner dataset but also reduces processing time by approximately half. As a result, we believe that the system can now update the website within 2 minutes when a container passes through the gate.
 
+---
+
+This project not only automates a previously time-consuming manual process but also enhances accuracy and efficiency. It's a significant step towards smarter and more efficient logistics and supply chain management.
+
+---
