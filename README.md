@@ -57,10 +57,11 @@ One of the major recent updates focuses on reducing the runtime of our code. Ini
 
 We introduced a new function to check the clarity of an image using the variance of the Laplacian method:
 
-def is_clear(image_path, threshold=50.0):\n
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)\n
-    variance = variance_of_laplacian(image)\n
-    return variance > threshold, variance\n
+'''python
+def is_clear(image_path, threshold=50.0):
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    variance = variance_of_laplacian(image)
+    return variance > threshold, variance
 
 def variance_of_laplacian(image):
     # calculate image's laplacian
@@ -68,6 +69,7 @@ def variance_of_laplacian(image):
     # variance of laplacian
     variance = laplacian.var()
     return variance
+'''
 
 ---
 
