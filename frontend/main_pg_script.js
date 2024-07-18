@@ -64,6 +64,7 @@ const rowsPerPage = 30;
 let currentPage = 1;
 let i = 0;
 
+//store specified item data to the local storage
 function redirectToDetails(containerNumber){
   const data = containerData;
 
