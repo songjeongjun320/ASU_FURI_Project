@@ -1,18 +1,18 @@
 // Sample data for demonstration
-const containerData = {
-  containerNumber: "123456",
-  time: "08:00 AM",
-  inOut: "In",
-  containerSize: "20ft",
-  driverName: "John Doe",
-  truckNumber: "ABC123",
-  chassisNumber: "CH12345",
-  pictures: [
-    "https://via.placeholder.com/300?text=Truck+Angle+1",
-    "https://via.placeholder.com/300?text=Truck+Angle+2",
-    "https://via.placeholder.com/300?text=Truck+Angle+3",
-  ],
-};
+// const containerData = {
+//   containerNumber: "123456",
+//   time: "08:00 AM",
+//   inOut: "In",
+//   containerSize: "20ft",
+//   driverName: "John Doe",
+//   truckNumber: "ABC123",
+//   chassisNumber: "CH12345",
+//   pictures: [
+//     "https://via.placeholder.com/300?text=Truck+Angle+1",
+//     "https://via.placeholder.com/300?text=Truck+Angle+2",
+//     "https://via.placeholder.com/300?text=Truck+Angle+3",
+//   ],
+// };
 
 
 // Function to display container details
