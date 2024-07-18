@@ -3,16 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytesseract
 import math
+from typing import List, Tuple
 
-img_path = ''
+img_path: str = ''
 
-def show(name, img, show=0):
+def show(name: str, img: np.ndarray, show: int=0) -> None:
     # if show != 0:
     #     plt.figure(figsize=(6,5)), plt.title(name), plt.get_current_fig_manager()
     #     plt.imshow(img, cmap='gray'), plt.show(block=False), plt.pause(1), plt.close()
     pass
 
-def read(read_img, company_list):
+def read(read_img:np.ndarray, company_list: List[str]) -> Tuple[str, str]:
     chars = pytesseract.image_to_string(read_img, lang='eng')
     chars = chars.replace(' ','')
     result_char = ''
@@ -35,7 +36,7 @@ def read(read_img, company_list):
 
 
 ########### Cntr Head Adjust - Start ################
-def cntr_head_adjust(cntr, company_list):
+def cntr_head_adjust(cntr: str, company_list: List[str]) -> str:
     ## Adjust Head ##
     if len(cntr) < 5:
         return cntr
@@ -67,12 +68,12 @@ def cntr_head_adjust(cntr, company_list):
     return cntr
 
 #### Need more detailed code #####
-def cntr_head_len_over4(cntr_head, company_list):
+def cntr_head_len_over4(cntr_head: str, company_list: List[str]) -> str:
     if cntr_head[-1] != 'U':
         return ""
     return cntr_head
 
-def cntr_head_len_under4(cntr_head, company_list):
+def cntr_head_len_under4(cntr_head: str, company_list: List[str]) -> str:
     if cntr_head[-1] != 'U':
         cntr_head = cntr_head + 'U'
         if len(cntr_head) == 4:
@@ -94,7 +95,7 @@ def cntr_head_len_under4(cntr_head, company_list):
             max_accuracy = accuracy
     return adjusted_head
 
-def cntr_head_len_4(cntr_head, company_list):
+def cntr_head_len_4(cntr_head: str, company_list: List[str]) -> str:
     if cntr_head[-1] != 'U':
         cntr_head[-1] == 'U'
         if cntr_head in company_list:
@@ -122,7 +123,7 @@ def cntr_head_len_4(cntr_head, company_list):
 
 
 ########### Cntr Last Number - Start ##############
-def cntr_last_digit(result_chars):
+def cntr_last_digit(result_chars: str) -> str:
     Alpha_Weight = [10,12,13,14,15,16,17,18,19,20,21,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38]
     last_digit  = ''
     sum = 0
@@ -147,14 +148,14 @@ def cntr_last_digit(result_chars):
 ########### Cntr Last Number - End ##############
 
 
-def img_load(img):
+def img_load(img: str) -> Tuple[np.ndarray, str]:
     img_ori = cv2.imread(img)
     print("img", img)
     img = img.replace("C:\\Users\\ngltr\\Downloads\\yolov5-master\\yolov5-master\\runs\\detect\\","").replace(".jpg","")
     return img, img_ori
 
 
-def img_denoise(img_ori):
+def img_denoise(img_ori: np.ndarray) -> Tuple[np.ndarray, int, int, int]:
     height,width,channel = img_ori.shape
     # img_denoised = cv2.fastNlMeansDenoisingColored(img_ori, None, 10,10,41,41)
     return img_ori,height,width,channel
@@ -299,8 +300,7 @@ def find_chars(contour_list, possible_contours, MAX_DIAG_MULTIPLYER=10, MAX_ANGL
     return matched_result_idx
 
 
-def rotate_plate_img(height, width, matched_result, black, \
-    PLATE_WIDTH_PADDING=1.5, PLATE_HEIGHT_PADDING=1.7, MIN_PLATE_RATIO=3, MAX_PLATE_RATIO=20):
+def rotate_plate_img(height, width, matched_result, black, PLATE_WIDTH_PADDING=1.5, PLATE_HEIGHT_PADDING=1.7, MIN_PLATE_RATIO=3, MAX_PLATE_RATIO=20):
 
     plate_imgs = []
     plate_infos = []
@@ -393,7 +393,7 @@ def erosion_detect(img_cropped, company_list, iteration):
     return result_char, img_eroded, chars
 
 
-def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possibility, company_list):
+def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possibility, company_list) -> None:
     reverse = False
     switch_button = result_possibility # if True, can return // if False, can't return
     
