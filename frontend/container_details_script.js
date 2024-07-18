@@ -14,17 +14,18 @@ const containerData = {
   ],
 };
 
+
 // Function to display container details
-function displayContainerDetails() {
+function displayContainerDetails(data) {
   const containerInfo = document.querySelector(".container-info");
   const containerInfoHTML = `
-        <h2>Container Number: ${containerData.containerNumber}</h2>
-        <p><strong>Time:</strong> ${containerData.time}</p>
-        <p><strong>In/Out:</strong> ${containerData.inOut}</p>
-        <p><strong>Container Size:</strong> ${containerData.containerSize}</p>
-        <p><strong>Driver's Name:</strong> ${containerData.driverName}</p>
-        <p><strong>Truck Number:</strong> ${containerData.truckNumber}</p>
-        <p><strong>Chassis Number:</strong> ${containerData.chassisNumber}</p>
+        <h2>Container Number: ${data.number}</h2>
+        <p><strong>Time:</strong> ${data.time}</p>
+        <p><strong>In/Out:</strong> ${data.inOut}</p>
+        <p><strong>Container Size:</strong> ${data.size}</p>
+        <p><strong>Driver's Name:</strong> ${data.driver}</p>
+        <p><strong>Truck Number:</strong> ${data.truckNumber}</p>
+        <p><strong>Chassis Number:</strong> ${data.chassisNumber}</p>
         <div class="picture-boxes">
             <!-- Picture boxes will be dynamically added here -->
         </div>
@@ -45,5 +46,16 @@ function goBack() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  displayContainerDetails();
+  // displayContainerDetails();
+  const containerNumber = new URLSearchParams(window.location.search).get('containerNumber');
+  const containerData = JSON.parse(localStorage.getItem('selectedContainer'));
+
+    if (containerData && containerData.number === containerNumber) {
+        displayContainerDetails(containerData);
+    } else {
+        console.log('No data found for container number:', containerNumber);
+    }
+
+    // Clear the selected container data from storage after using it
+    localStorage.removeItem('selectedContainer');
 });
