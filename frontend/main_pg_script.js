@@ -62,6 +62,17 @@ const containerData = [
 ];
 const rowsPerPage = 30;
 let currentPage = 1;
+let i = 0;
+
+function redirectToDetails(containerNumber){
+  const data = containerData;
+
+  const container = data.find(item=> item.number == containerNumber);
+
+  localStorage.setItem('selectedContainer', JSON.stringify(container));
+
+  window.open(`container_details_pg.html?containerNumber=${containerNumber}`, '_blank');
+}
 
 function displayPage(page) {
   const tableBody = document.getElementById('tableBody');
@@ -74,7 +85,7 @@ function displayPage(page) {
   for (let item of paginatedItems) {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${item.number}</td>
+      <td><a href="#" onclick="redirectToDetails('${item.number}')" class="container-link">${item.number}</a></td>
       <td>${item.date}</td>
       <td>${item.time}</td>
       <td>${item.inOut}</td>
