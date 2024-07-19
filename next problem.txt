@@ -1,2 +1,13 @@
-Jun
-- Need to revise the logic for taking better quality pictures.
+Yolo
+
+Current logic = if clear variance > 100, save the img
+if 3 imgs detected, stop
+
+But it should be change, 
+if clear variance is larger than previous one, 
+select that one and send it to textract
+
+1. change plots.py "is_clear" func
+2. change the logic, only remember the pic address which has max clear_variance.
+    - because the current logic is not the best logic.
+3. send to textract

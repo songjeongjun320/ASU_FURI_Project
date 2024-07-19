@@ -3,4 +3,5 @@
 *.pt
 data
 *.jpg
+.env
 textractfile.py
