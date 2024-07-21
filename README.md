@@ -8,10 +8,10 @@ I'm excited to share a project I've been working on that combines the power of Y
 
 ### Key Features
 
-- 🔭 **Real-Time Folder Monitoring**: The system continuously monitors a specified folder for new video files.
-- 📽 **Automated Video Processing**: Upon detecting a new video file, the system processes it to identify and extract container numbers using a custom-trained YOLO model.
-- 📁 **Data Storage and API Integration**: Extracted data is formatted into JSON and stored locally. Additionally, this data can be sent to a remote server via an API for further processing or integration into other systems.
-- **AWS Integration**: The project also includes functionality for uploading images to AWS S3, enabling scalable and secure storage solutions.
+- 🔭 **Real-Time Folder Monitoring**: Continuously monitors a specified folder for new video files.
+- 📽 **Automated Video Processing**: Processes new video files to identify and extract container numbers using a custom-trained YOLO model.
+- 📁 **Data Storage and API Integration**: Formats extracted data into JSON for local storage and sends it to a remote server via API for further processing or integration.
+- ☁️ **AWS Integration**: Includes functionality for uploading images to AWS S3 for scalable and secure storage solutions.
 
 ---
 
@@ -34,7 +34,8 @@ I'm excited to share a project I've been working on that combines the power of Y
 - **AWS Textract Integration**: Integrating AWS Textract to read the images and provide results in real-time.
 - **Cost Reduction**: Evaluating ways to reduce the number of AWS transactions to lower costs.
 
- 
+---
+
 This project not only automates a previously time-consuming manual process but also enhances accuracy and efficiency. It's a significant step towards smarter and more efficient logistics and supply chain management.
 
 [Check out the video below for a detailed demonstration of the system in action. Your feedback and thoughts are most welcome!](https://www.linkedin.com/posts/junsong0602_ai-machinelearning-yolo-activity-7212526873040277504-xzzy?utm_source=share&utm_medium=member_desktop)
@@ -52,7 +53,7 @@ We chose YOLOv8 over the latest version, YOLOv10, because YOLOv8 offers a better
 
 ---
 
-### Recent Updates (As of 7/15/2024)
+### Recent Updates (As of 7/20/2024)
 One of the major recent updates focuses on reducing the runtime of our code. Initially, the system would capture a large number of images (sometimes 30-40) whenever there was movement of a truck. Many of these images were unnecessary, being blurry or improperly cropped.
 
 We introduced a new function to check the clarity of an image using the variance of the Laplacian method:
@@ -74,6 +75,13 @@ def variance_of_laplacian(image):
 ---
 
 By applying this function, we filter out only the clearest images, selecting just three clean and usable images for storage. This not only results in a cleaner dataset but also reduces processing time by approximately half. As a result, we believe that the system can now update the website within 2 minutes when a container passes through the gate.
+
+Furthermore, we updated the logic to send the image path with the maximum variance to the backend. After YOLO detects the target object, the system stops processing once the object is no longer in the video. This change slightly increased the running time, but it allows for more accurate and clearer images.
+
+---
+
+### Next Update
+Our next update will focus on integrating AWS Textract to process the clearest images received from YOLO. These images will be uploaded to AWS for further analysis and storage, enhancing the overall efficiency and accuracy of our system.
 
 ---
 
