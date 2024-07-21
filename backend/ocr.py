@@ -4,6 +4,7 @@ import ocr_function
 import datetime
 import time
 import json
+import cv2
 import requests
 import boto3
 
@@ -99,8 +100,21 @@ def read(f_name, company_list):
         return False
 
 # if it is clear pic, return true else, return false
-def is_clear(img_path):
-    return ocr_function.is_clear(img_path)
+# threshold is gonna be criteria. If the variance is smaller than threshold, it is blurry
+# The larger variance, the more clear images.
+def is_clear(image_path, threshold=100.0):
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    variance = variance_of_laplacian(image)
+    print("Image laplacian variance : ", variance)
+    return variance > threshold
+
+
+def variance_of_laplacian(image):
+    # calculate image's laplacian
+    laplacian = cv2.Laplacian(image, cv2.CV_64F)
+    # variance of laplacian
+    variance = laplacian.var()
+    return variance
 
 
 def make_json(result, cntr_size, name, file_path, now, newfolder):  # If right CntrNo detected, send .json file to YMS
