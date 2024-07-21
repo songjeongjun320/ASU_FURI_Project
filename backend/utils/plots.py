@@ -562,9 +562,10 @@ def save_one_box(xyxy, im, file=Path('im.jpg'), gain=1.02, pad=10, square=False,
         Image.fromarray(crop[..., ::-1]).save(f, quality=95, subsampling=0)  # save RGB
 
         # if it is clear pic, save the image, if not delete the image.
-        if(ocr.is_clear(f)):
-            return crop, f, True
-        else:
-            os.remove(f)
-            return crop, f, False
+        # if(ocr.is_clear(f)):
+        #     return crop, f, True
+        # else:
+        #     os.remove(f)
+        #     return crop, f, False
+        return crop, f, True
     return crop, f, False
