@@ -4,6 +4,9 @@ import time
 import os
 import detect  # Assuming detect is a custom module you've implemented
 
+# path for CCTV video files
+path: str = ""
+
 # Function to perform the job
 def job() -> None:
     dateformat = "%m%d%Y"
@@ -56,28 +59,33 @@ def job() -> None:
 
         time.sleep(1)  # Adjust sleep time as needed
 
-def read_cntr_number_region(video_path, folder_name) -> None:
+# It will return 
+def read_cntr_number_region(video_path, folder_name) -> str:
     # Example weights and configuration
     weight = "./runs/train/TruckNumber_yolov5s_results34/weights/best.pt"
     conf_threshold = 0.5
 
     # Run detection using your custom detect module
-    detect.run(weights=weight, source=video_path, conf_thres=conf_threshold, name=folder_name)
+    max_clear_img_path = detect.run(weights=weight, source=video_path, conf_thres=conf_threshold, name=folder_name)
     print("Detection Completed at: ", datetime.now())
+    print("The most clear img path: ", max_clear_img_path)
+    return max_clear_img_path
 
-# Main script starts here
+def send_to_AWS_Textract(max_clear_img_path):
+    pass
 
-# Define the path where the CCTV videos will be downloaded
-print("\n\n=============================================================")
-print("C:\\Users\\frank\\OneDrive\\Desktop\\Docker")
-print("--- Find CCTV Video downloaded folder ---")
-print("Path to watch CCTV: ")
-path = input().strip()  # Get path from user input
-print("=============================================================")
-print("Ready to Run - YOLO_Engine")
 
 # Main loop to run the scheduler
 def main() -> None:
+    # Define the path where the CCTV videos will be downloaded
+    print("\n\n=============================================================")
+    print("C:\\Users\\frank\\OneDrive\\Desktop\\Docker")
+    print("--- Find CCTV Video downloaded folder ---")
+    print("Path to watch CCTV: ")
+    path = input().strip()  # Get path from user input
+    print("=============================================================")
+    print("Ready to Run - YOLO_Engine")
+
     while True:
         schedule.run_pending()
         current_date = datetime.now().strftime("%m%d%Y")
@@ -116,7 +124,8 @@ def main() -> None:
                         time.sleep(1)  # Optional delay before processing
                         
                         # Call your function to process the video
-                        read_cntr_number_region(video_path, current_date)
+                        max_clear_img_path = read_cntr_number_region(video_path, current_date)
+                        send_to_AWS_Textract(max_clear_img_path)
                     else:
                         continue
             
