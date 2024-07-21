@@ -119,7 +119,11 @@ def run(
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
     
     # Whenever we get the valuable image, add 1 to stop_counter
-    stop_counter = 0
+    stop_counter: int = 0
+    prev_status: bool = False
+    curr_status: bool = False
+    max_clear_variance: float = 0.0
+    max_clear_img_path: str = ""
 
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
@@ -143,6 +147,18 @@ def run(
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
+            # if the det is empty, It does mean that YOLO couldn't detect anything.
+            # So, YOLO detected the object previously (prev_status), and current_status is False which is not detecting.
+            # It means that the object already passed on video, so we don't need to read anymore.
+            # Process stop. -> Reduce runtime
+            if len(det) == 0:
+                # print("prev_status : ", prev_status , " stop_counter: ", stop_counter)
+                if prev_status and stop_counter >= 10:
+                    return max_clear_img_path
+                elif prev_status and stop_counter < 10:
+                    stop_counter += 1
+                    # print("Stop_counter:  ", stop_counter)
+
             seen += 1
             if webcam:  # batch_size >= 1
                 p, im0, frame = path[i], im0s[i].copy(), dataset.count
@@ -179,21 +195,17 @@ def run(
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         annotator.box_label(xyxy, label, color=colors(c, True))
-                        file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg'
 
                         # if save_crop: then let's save the cropped img
                         # tmp = cropped img, saved_path = path for cropped image, is_saved = if it is clear image and saved the image, return true else false
                         tmp, saved_path, is_saved = save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                        prev_status = True
 
-                        # if save_one_box saved cleared image, now we can read it.
-                        if(is_saved):
-                            # If here return true mean, this func detected the valuable cntr number so return true
-                            # if ocr.check_img(file) == False:
-                            #     save_img = False
-                            stop_counter += 1
-                            # if we found 3 valuable pictures then we stop this process
-                            if stop_counter >= 3:
-                                return
+                        curr_variance = check_clearance(saved_path)
+                        if curr_variance > max_clear_variance:
+                            max_clear_img_path = saved_path
+                            max_clear_variance = curr_variance
+
 
             # Stream results
             # If you don't want to show the video comment this codes.
@@ -226,6 +238,7 @@ def run(
                     vid_writer[i].write(im0)
         # Print time (inference-only)
         LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
+        
 
     # Print results
     t = tuple(x.t / seen * 1E3 for x in dt)  # speeds per image
@@ -235,6 +248,8 @@ def run(
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
+    
+    return max_clear_img_path
 
 
 def parse_opt():
@@ -270,6 +285,18 @@ def parse_opt():
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))
     return opt
+
+# if it is clear pic, return true else, return false
+# threshold is gonna be criteria. If the variance is smaller than threshold, it is blurry
+# The larger variance, the more clear images.
+def check_clearance(image_path, threshold=100.0) -> float:
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    # calculate image's laplacian
+    laplacian = cv2.Laplacian(image, cv2.CV_64F)
+    # variance of laplacian
+    variance = laplacian.var()
+    print("Image laplacian variance : ", variance)
+    return variance
 
 
 def main(opt):
