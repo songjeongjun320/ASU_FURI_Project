@@ -471,20 +471,3 @@ def main(img, gr_bl_constant, gr_bl_constant_reverse, h_max, h_min, result_possi
 
     ### Confirm Container Number ###
     return chars, result_chars, reverse
-
-
-def variance_of_laplacian(image):
-    # calculate image's laplacian
-    laplacian = cv2.Laplacian(image, cv2.CV_64F)
-    # variance of laplacian
-    variance = laplacian.var()
-    return variance
-
-
-# threshold is gonna be criteria. If the variance is smaller than threshold, it is blurry
-# The larger variance, the more clear images.
-def is_clear(image_path, threshold=100.0):
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    variance = variance_of_laplacian(image)
-    print("Image laplacian variance : ", variance)
-    return variance > threshold
