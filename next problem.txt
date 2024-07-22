@@ -1,4 +1,4 @@
-After textract, How can we extract the datas well.
+1. After textract, How can we extract the datas well.
 
 ex examples)
 ---
@@ -12,3 +12,7 @@ D
 WHSU
 ######
 ---
+
+2. Usually textract couldn't detect the last digit.
+So we need to put the calculation logic of last digit.
+Check YOLO_CODE_Analyze excel file.
