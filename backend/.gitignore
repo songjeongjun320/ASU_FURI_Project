@@ -265,3 +265,4 @@ train/
 # Company codes
 Company_List.txt
 
+.env
