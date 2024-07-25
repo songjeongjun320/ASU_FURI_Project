@@ -1,8 +1,12 @@
 from datetime import datetime
+from dotenv import load_dotenv
 import schedule
 import time
 import os
+import boto3
 import detect  # Assuming detect is a custom module you've implemented
+
+from typing import List, Tuple
 
 # path for CCTV video files
 path: str = ""
@@ -71,8 +75,53 @@ def read_cntr_number_region(video_path, folder_name) -> str:
     print("The most clear img path: ", max_clear_img_path)
     return max_clear_img_path
 
+# AWS Textrac #
+def configure():
+    load_dotenv()
+
+def get_acct():
+    area = os.getenv('textract_area')
+    access_id = os.getenv('access_id')
+    access_key = os.getenv('access_key')
+    return area, access_id, access_key
+
+# Extract the text from the cutted image file
 def send_to_AWS_Textract(max_clear_img_path):
-    pass
+    # connect AWS Textract acct
+    area, access_id, access_key = get_acct()
+    try:
+        textract = boto3.client(
+            'textract',
+            aws_access_key_id=access_id,
+            aws_secret_access_key=access_key,
+            region_name=area
+        )
+    except Exception as e:
+        print("Can't connect to Textract", e)
+    else:
+        print("Textract connected!")
+    
+    # Open the img
+    with open(max_clear_img_path, 'rb') as image:
+        imageBytes = image.read()
+
+    # Sending img to Textract
+    response = textract.detect_document_text(Document={'Bytes': imageBytes})
+            
+    return response
+
+def read_result_from_Textract(response) -> List[str]:
+    print("Image read by Textract: ")
+    output: List[str] = []
+    # Get the results from here
+    if 'Blocks' in response:
+        for item in response['Blocks']:
+            if item['BlockType'] == 'LINE':
+                print(item['Text'])
+                output.append(item['Text'])
+    else:
+        print("No text detected.")
+    return output
 
 
 # Main loop to run the scheduler
@@ -125,7 +174,8 @@ def main() -> None:
                         
                         # Call your function to process the video
                         max_clear_img_path = read_cntr_number_region(video_path, current_date)
-                        send_to_AWS_Textract(max_clear_img_path)
+                        response = send_to_AWS_Textract(max_clear_img_path)
+                        read_result_from_Textract(response)
                     else:
                         continue
             
