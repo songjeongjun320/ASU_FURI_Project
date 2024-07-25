@@ -76,17 +76,17 @@ def read_cntr_number_region(video_path, folder_name) -> str:
     return max_clear_img_path
 
 # AWS Textrac #
-def configure():
+def configure() -> None:
     load_dotenv()
 
-def get_acct():
+def get_acct() -> Tuple[str, str, str]:
     area = os.getenv('textract_area')
     access_id = os.getenv('access_id')
     access_key = os.getenv('access_key')
     return area, access_id, access_key
 
 # Extract the text from the cutted image file
-def send_to_AWS_Textract(max_clear_img_path):
+def send_to_AWS_Textract(max_clear_img_path) -> dict:
     # connect AWS Textract acct
     area, access_id, access_key = get_acct()
     try:
