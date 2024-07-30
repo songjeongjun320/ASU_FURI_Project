@@ -53,7 +53,6 @@ We chose YOLOv8 over the latest version, YOLOv10, because YOLOv8 offers a better
 
 ---
 
-### Recent Updates (As of 7/20/2024)
 One of the major recent updates focuses on reducing the runtime of our code. Initially, the system would capture a large number of images (sometimes 30-40) whenever there was movement of a truck. Many of these images were unnecessary, being blurry or improperly cropped.
 
 We introduced a new function to check the clarity of an image using the variance of the Laplacian method:
