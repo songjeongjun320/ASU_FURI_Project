@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OCR Front by Jun Song</title>
-    <link rel="stylesheet" href="assets/css/log_in_pg_style.css" />
+    <title>OCR Front by Jun Song, Seonho Yeom</title>
+    <link rel="stylesheet" href="log_in_pg_style.css" />
   </head>
   <body>
     <div class="maroon-block"></div>
@@ -15,8 +15,69 @@
         <input type="text" id="username" name="username" /><br /><br />
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" /><br /><br />
-        <input type="submit" value="Login" />
+        <input type="submit" id = "signInButton" value="Login" />
+        <input type="submit" id = "signUpButton" value="Sign Up" />
       </form>
     </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "%REACT_APP_apiKey%",
+        authDomain: "%REACT_APP_authDomain&",
+        projectId: "%REACT_APP_projectId%",
+        storageBucket: "%REACT_APP_storageBucket%",
+        messagingSenderId: "%REACT_APP_messagingSenderId%",
+        appId: "%REACT_APP_appId%",
+        measurementId: "%REACT_APP_measurementId%"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      
+      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+      
+      const auth = getAuth();
+
+      document.getElementById('signUpButton').addEventListener('click', (event) => {
+          event.preventDefault()
+          window.open('sign_up_pg.html')
+      })
+
+      document.getElementById('signInButton').addEventListener('click', (event) => {
+          event.preventDefault()
+          const signInUsername = document.getElementById('username').value
+          const signInPassword = document.getElementById('password').value
+          signInWithEmailAndPassword(auth, signInUsername, signInPassword)
+              .then((userCredential) => {
+                  // Signed in 
+                  console.log(userCredential)
+                  const user = userCredential.user;
+                  window.open('main_pg.html')
+                  // ...
+              })
+              .catch((error) => {
+                  console.log('error')
+                  const errorCode = error.code;
+                  const errorMessage = error.message;
+                  alert('Incorrect Username or Password, Please do it again')
+              });
+      })
+      
+
+
+
+
+      console.log("hello world")
+      console.log(app)
+    </script>
   </body>
 </html>
