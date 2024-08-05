@@ -33,6 +33,7 @@ import datetime
 import os
 import platform
 import sys
+import logging
 from pathlib import Path
 
 import torch
@@ -51,6 +52,17 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
 
+# Logger
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
+# Setting the Filehandler
+log_file = 'log.txt'
+file_handler = logging.FileHandler(log_file)
+file_handler.setLevel(logging.INFO)
+
+# 핸들러 로거에 추가
+LOGGER.addHandler(file_handler)
 
 @smart_inference_mode()
 def run(
@@ -185,6 +197,7 @@ def run(
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    LOGGER.info(f"CONFIDENCE : {conf * 100} %")
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
@@ -295,7 +308,7 @@ def check_clearance(image_path, threshold=100.0) -> float:
     laplacian = cv2.Laplacian(image, cv2.CV_64F)
     # variance of laplacian
     variance = laplacian.var()
-    print("Image laplacian variance : ", variance)
+    LOGGER.info(f"Image laplacian variance :  {variance}")
     return variance
 
 
