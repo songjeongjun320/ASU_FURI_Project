@@ -5,6 +5,19 @@ import time
 import os
 import boto3
 import detect  # Assuming detect is a custom module you've implemented
+import logging
+
+# Logger
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
+# Setting the Filehandler
+log_file = 'log.txt'
+file_handler = logging.FileHandler(log_file)
+file_handler.setLevel(logging.INFO)
+
+# Add Handler Logger
+LOGGER.addHandler(file_handler)
 
 from typing import List, Tuple
 
@@ -70,10 +83,10 @@ def read_cntr_number_region(video_path, folder_name) -> str:
     conf_threshold = 0.5
 
     # Run detection using your custom detect module
-    max_clear_img_path = detect.run(weights=weight, source=video_path, conf_thres=conf_threshold, name=folder_name)
+    max_conf_img_path = detect.run(weights=weight, source=video_path, conf_thres=conf_threshold, name=folder_name)
     print("Detection Completed at: ", datetime.now())
-    print("The most clear img path: ", max_clear_img_path)
-    return max_clear_img_path
+    print("The most confident img path: ", max_conf_img_path)
+    return max_conf_img_path
 
 # AWS Textrac #
 def configure() -> None:
@@ -86,7 +99,7 @@ def get_acct() -> Tuple[str, str, str]:
     return area, access_id, access_key
 
 # Extract the text from the cutted image file
-def send_to_AWS_Textract(max_clear_img_path) -> dict:
+def send_to_AWS_Textract(max_conf_img_path) -> dict:
     # connect AWS Textract acct
     area, access_id, access_key = get_acct()
     try:
@@ -102,7 +115,7 @@ def send_to_AWS_Textract(max_clear_img_path) -> dict:
         print("Textract connected!")
     
     # Open the img
-    with open(max_clear_img_path, 'rb') as image:
+    with open(max_conf_img_path, 'rb') as image:
         imageBytes = image.read()
 
     # Sending img to Textract
@@ -173,8 +186,10 @@ def main() -> None:
                         time.sleep(1)  # Optional delay before processing
                         
                         # Call your function to process the video
-                        max_clear_img_path = read_cntr_number_region(video_path, current_date)
-                        response = send_to_AWS_Textract(max_clear_img_path)
+                        max_conf_img_path = read_cntr_number_region(video_path, current_date)
+                        if max_conf_img_path == "":
+                            LOGGER.info(f"NO DETECTION - {new_file}")
+                        response = send_to_AWS_Textract(max_conf_img_path)
                         read_result_from_Textract(response)
                     else:
                         continue

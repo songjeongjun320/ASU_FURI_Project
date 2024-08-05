@@ -61,7 +61,7 @@ log_file = 'log.txt'
 file_handler = logging.FileHandler(log_file)
 file_handler.setLevel(logging.INFO)
 
-# 핸들러 로거에 추가
+# Add Handler Logger
 LOGGER.addHandler(file_handler)
 
 @smart_inference_mode()
@@ -136,6 +136,8 @@ def run(
     curr_status: bool = False
     max_clear_variance: float = 0.0
     max_clear_img_path: str = ""
+    max_conf: float = 0.0
+    max_conf_img_path: str = ""
 
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
@@ -166,7 +168,7 @@ def run(
             if len(det) == 0:
                 # print("prev_status : ", prev_status , " stop_counter: ", stop_counter)
                 if prev_status and stop_counter >= 10:
-                    return max_clear_img_path
+                    return max_conf_img_path
                 elif prev_status and stop_counter < 10:
                     stop_counter += 1
                     # print("Stop_counter:  ", stop_counter)
@@ -214,22 +216,29 @@ def run(
                         tmp, saved_path, is_saved = save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
                         prev_status = True
 
-                        curr_variance = check_clearance(saved_path)
-                        if curr_variance > max_clear_variance:
-                            max_clear_img_path = saved_path
-                            max_clear_variance = curr_variance
+                        # If Yolo detect the image and its confidence is max, we save the path
+                        if conf > max_conf:
+                            max_conf = conf
+                            max_conf_img_path = saved_path
+                            print("Here1 : ", max_conf_img_path)
+            
+                        # Check how clear image is, But decided to take only from conf
+                        # curr_variance = check_clearance(saved_path)
+                        # if curr_variance > max_clear_variance:
+                        #     max_clear_img_path = saved_path
+                        #     max_clear_variance = curr_variance
 
 
+            im0 = annotator.result()
             # Stream results
             # If you don't want to show the video comment this codes.
-            im0 = annotator.result()
-            if view_img:
-                if platform.system() == 'Linux' and p not in windows:
-                    windows.append(p)
-                    cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
-                    cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
-                cv2.imshow(str(p), im0)  # Showing the video detecting process
-                cv2.waitKey(1)  # 1 milli second
+            # if view_img:
+            #     if platform.system() == 'Linux' and p not in windows:
+            #         windows.append(p)
+            #         cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
+            #         cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
+            #     cv2.imshow(str(p), im0)  # Showing the video detecting process
+            #     cv2.waitKey(1)  # 1 milli second
 
             # Save results (image with detections)
             if save_img:
@@ -261,8 +270,8 @@ def run(
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
-    
-    return max_clear_img_path
+    print("Here2 : ", max_conf_img_path)
+    return max_conf_img_path
 
 
 def parse_opt():
