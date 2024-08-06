@@ -17,8 +17,18 @@
         <input type="password" id="password" name="password" /><br /><br />
         <input type="submit" id = "signInButton" value="Login" />
         <input type="submit" id = "signUpButton" value="Sign Up" />
+        <button type="summit" id="forgotPass">Did you Forgot your Password?</button>
       </form>
     </div>
+
+    <div id="popup" class="popup">
+      <div class="popup-content">
+          <span class="close-btn" id="closeBtn">&times;</span>
+          <h2>Enter your E-mail</h2>
+          <input type="email" placeholder="Enter your email" id="emailInput">
+          <button id="findBtn">Send password reset link</button>
+      </div>
+  </div>
 
     <script type="module">
       // Import the functions you need from the SDKs you need
@@ -43,7 +53,7 @@
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
       
-      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+      import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
       
       const auth = getAuth();
 
@@ -51,6 +61,31 @@
           event.preventDefault()
           window.open('sign_up_pg.html')
       })
+
+      document.getElementById('forgotPass').addEventListener('click', (event) => {
+        event.preventDefault()
+        document.getElementById('popup').style.display = 'flex';
+    })
+
+    document.getElementById('closeBtn').addEventListener('click', function() {
+      document.getElementById('popup').style.display = 'none';
+  });
+  
+  document.getElementById('findBtn').addEventListener('click', function() {
+      const email = document.getElementById('emailInput').value;
+      sendPasswordResetEmail(auth, email)
+          .then(() => {
+            // Password reset email sent!
+            // ..
+            alert("Password reset email sent!")
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert("There are no account using that email")
+            // ..
+          });
+  });
 
       document.getElementById('signInButton').addEventListener('click', (event) => {
           event.preventDefault()
@@ -72,6 +107,10 @@
               });
       })
       
+
+
+
+
       console.log("hello world")
       console.log(app)
     </script>
