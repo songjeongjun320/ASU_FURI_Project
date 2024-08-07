@@ -220,7 +220,6 @@ def run(
                         if conf > max_conf:
                             max_conf = conf
                             max_conf_img_path = saved_path
-                            print("Here1 : ", max_conf_img_path)
             
                         # Check how clear image is, But decided to take only from conf
                         # curr_variance = check_clearance(saved_path)
@@ -270,7 +269,6 @@ def run(
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
-    print("Here2 : ", max_conf_img_path)
     return max_conf_img_path
 
 
