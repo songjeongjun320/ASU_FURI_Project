@@ -15,20 +15,22 @@
         <input type="text" id="username" name="username" /><br /><br />
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" /><br /><br />
-        <input type="submit" id = "signInButton" value="Login" />
-        <input type="submit" id = "signUpButton" value="Sign Up" />
-        <button type="summit" id="forgotPass">Did you Forgot your Password?</button>
+        <input type="submit" id="signInButton" value="Login" />
+        <input type="submit" id="signUpButton" value="Sign Up" />
+        <button type="summit" id="forgotPass">
+          Did you Forgot your Password?
+        </button>
       </form>
     </div>
 
     <div id="popup" class="popup">
       <div class="popup-content">
-          <span class="close-btn" id="closeBtn">&times;</span>
-          <h2>Enter your E-mail</h2>
-          <input type="email" placeholder="Enter your email" id="emailInput">
-          <button id="findBtn">Send password reset link</button>
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <h2>Enter your E-mail</h2>
+        <input type="email" placeholder="Enter your email" id="emailInput" />
+        <button id="findBtn">Send password reset link</button>
       </div>
-  </div>
+    </div>
 
     <script type="module">
       // Import the functions you need from the SDKs you need
@@ -36,7 +38,7 @@
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
-    
+
       // Your web app's Firebase configuration
       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
       const firebaseConfig = {
@@ -46,73 +48,81 @@
         storageBucket: "%REACT_APP_storageBucket%",
         messagingSenderId: "%REACT_APP_messagingSenderId%",
         appId: "%REACT_APP_appId%",
-        measurementId: "%REACT_APP_measurementId%"
+        measurementId: "%REACT_APP_measurementId%",
       };
-    
+
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
-      
-      import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-      
+
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        sendPasswordResetEmail,
+      } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
       const auth = getAuth();
 
-      document.getElementById('signUpButton').addEventListener('click', (event) => {
-          event.preventDefault()
-          window.open('sign_up_pg.html')
-      })
+      document
+        .getElementById("signUpButton")
+        .addEventListener("click", (event) => {
+          event.preventDefault();
+          window.open("sign_up_pg.html");
+        });
 
-      document.getElementById('forgotPass').addEventListener('click', (event) => {
-        event.preventDefault()
-        document.getElementById('popup').style.display = 'flex';
-    })
+      document
+        .getElementById("forgotPass")
+        .addEventListener("click", (event) => {
+          event.preventDefault();
+          document.getElementById("popup").style.display = "flex";
+        });
 
-    document.getElementById('closeBtn').addEventListener('click', function() {
-      document.getElementById('popup').style.display = 'none';
-  });
-  
-  document.getElementById('findBtn').addEventListener('click', function() {
-      const email = document.getElementById('emailInput').value;
-      sendPasswordResetEmail(auth, email)
+      document
+        .getElementById("closeBtn")
+        .addEventListener("click", function () {
+          document.getElementById("popup").style.display = "none";
+        });
+
+      document.getElementById("findBtn").addEventListener("click", function () {
+        const email = document.getElementById("emailInput").value;
+        sendPasswordResetEmail(auth, email)
           .then(() => {
             // Password reset email sent!
             // ..
-            alert("Password reset email sent!")
+            alert("Password reset email sent!");
           })
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            alert("There are no account using that email")
+            alert("There are no account using that email");
             // ..
           });
-  });
+      });
 
-      document.getElementById('signInButton').addEventListener('click', (event) => {
-          event.preventDefault()
-          const signInUsername = document.getElementById('username').value
-          const signInPassword = document.getElementById('password').value
+      document
+        .getElementById("signInButton")
+        .addEventListener("click", (event) => {
+          event.preventDefault();
+          const signInUsername = document.getElementById("username").value;
+          const signInPassword = document.getElementById("password").value;
           signInWithEmailAndPassword(auth, signInUsername, signInPassword)
-              .then((userCredential) => {
-                  // Signed in 
-                  console.log(userCredential)
-                  const user = userCredential.user;
-                  window.open('main_pg.html')
-                  // ...
-              })
-              .catch((error) => {
-                  console.log('error')
-                  const errorCode = error.code;
-                  const errorMessage = error.message;
-                  alert('Incorrect Username or Password, Please do it again')
-              });
-      })
-      
+            .then((userCredential) => {
+              // Signed in
+              console.log(userCredential);
+              const user = userCredential.user;
+              window.open("main_pg.html");
+              // ...
+            })
+            .catch((error) => {
+              console.log("error");
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              alert("Incorrect Username or Password, Please do it again");
+            });
+        });
 
-
-
-
-      console.log("hello world")
-      console.log(app)
+      console.log("hello world");
+      console.log(app);
     </script>
   </body>
 </html>
