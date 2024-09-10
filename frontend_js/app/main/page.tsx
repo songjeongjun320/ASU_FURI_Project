@@ -1,6 +1,7 @@
 "use client"; // Mark this as a client component
 
-import { useState } from "react";
+import { use, useState } from "react";
+import { useRouter } from "next/navigation"; // Update this import
 
 // Mock data generation (100 items)
 const generateData = () => {
@@ -20,6 +21,7 @@ const generateData = () => {
 };
 
 export default function MainPage() {
+  const router = useRouter(); // Add this line
   const containerData = generateData();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +44,10 @@ export default function MainPage() {
 
   const prevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+  // Handle row click to navigate to details page
+  const handleRowClick = (containerNumber: string) => {
+    router.push(`/cntr_detail?containerNumber=${containerNumber}`);
   };
 
   return (
@@ -77,7 +83,10 @@ export default function MainPage() {
           <tbody>
             {currentItems.map((container, index) => (
               <tr key={index} className="hover:bg-gray-100">
-                <td className="border px-2 py-1">
+                <td
+                  className="border px-2 py-1"
+                  onClick={() => handleRowClick(container.containerNumber)}
+                >
                   {container.containerNumber}
                 </td>
                 <td className="border px-2 py-1">{container.date}</td>

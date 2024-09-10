@@ -1,0 +1,5 @@
+Putted the handler when I click the row.
+
+But, the page doesn't move to the cntr detail page.
+
+And also, when it move to cntr detail page, the page should show exact that container's data which user clicked.
