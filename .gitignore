@@ -6,4 +6,6 @@ data
 .env
 textractfile.py
 log.txt
+*.json
 
+node_modules
