@@ -8,7 +8,13 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  theme: {},
+  theme: {
+    extend: {
+      colors: {
+        maroon: "#800000", // Maroon 색상 추가
+      },
+    },
+  },
   plugins: [require("@tailwindcss/typography")],
 };
 

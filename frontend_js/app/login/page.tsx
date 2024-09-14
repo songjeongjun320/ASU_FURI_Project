@@ -16,9 +16,20 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [showPopup, setShowPopup] = useState(false);
 
+  const handleForgotPassword = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) {
+      alert("Error sending password reset email");
+    } else {
+      alert("Password reset email sent");
+      setShowPopup(false);
+    }
+  };
+
   // Function to handle login
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
+    console.log(email, password);
 
     // Hardcoded admin login: email 'jun' and password '1234'
     if (email === "jun" && password === "1234") {
@@ -42,7 +53,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+    <div className="min-h-screen flex flex-col justify-center items-center  bg-maroon">
       <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-center mb-6 text-[#800000]">
           Login

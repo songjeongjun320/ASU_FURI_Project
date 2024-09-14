@@ -21,18 +21,22 @@ const generateData = () => {
 
 export default function ContainerDetailPage() {
   const router = useRouter();
-  const { containerNumber } = router.query;
   const [containerData, setContainerData] = useState(null);
 
   useEffect(() => {
-    if (containerNumber) {
-      const data = generateData();
-      const selectedContainer = data.find(
-        (container) => container.containerNumber === containerNumber
-      );
-      setContainerData(selectedContainer);
+    // router.isReady를 통해 라우터가 준비되었는지 확인합니다.
+    if (router.isReady) {
+      const { containerNumber } = router.query; // router.query가 준비되었을 때에만 실행됩니다.
+
+      if (containerNumber) {
+        const data = generateData();
+        const selectedContainer = data.find(
+          (container) => container.containerNumber === containerNumber
+        );
+        setContainerData(selectedContainer);
+      }
     }
-  }, [containerNumber]);
+  }, [router.isReady, router.query]);
 
   if (!containerData) {
     return <div>Loading...</div>;
