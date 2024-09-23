@@ -3,12 +3,23 @@
 import { use, useState } from "react";
 import { useRouter } from "next/navigation"; // Update this import
 
+const generateRandomAlphabets = (length: number) => {
+  return Array(length)
+    .fill(0)
+    .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
+    .join("");
+};
+
 // Mock data generation (100 items)
 const generateData = () => {
   const data = [];
   for (let i = 1; i <= 100; i++) {
+    const alphabets = generateRandomAlphabets(4);
+    const numbers = Math.floor(Math.random() * 10000000)
+      .toString()
+      .padStart(7, "0");
     data.push({
-      containerNumber: `C${i.toString().padStart(3, "0")}`,
+      containerNumber: `${alphabets}${numbers}`,
       date: `2023-09-${(i % 30).toString().padStart(2, "0")}`,
       time: `${12 + (i % 12)}:00`,
       inOut: i % 2 === 0 ? "In" : "Out",

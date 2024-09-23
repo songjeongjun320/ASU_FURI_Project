@@ -24,7 +24,6 @@ export default function ContainerDetailPage() {
   const router = useRouter();
   const params = useParams();
   const [containerData, setContainerData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const containerNumber = params.containerNumber;
@@ -34,18 +33,14 @@ export default function ContainerDetailPage() {
       const selectedContainer = data.find(
         (container) => container.containerNumber === containerNumber
       );
-      setContainerData(selectedContainer || null);
+      setContainerData(selectedContainer);
     }
-    setIsLoading(false);
   }, [params.containerNumber]);
 
-  if (isLoading) {
+  if (!containerData) {
     return <div>Loading...</div>;
   }
 
-  if (!containerData) {
-    return <div>Container not found</div>;
-  }
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-2">
       <div className="container max-w-full bg-white p-4 shadow-md rounded-lg">
