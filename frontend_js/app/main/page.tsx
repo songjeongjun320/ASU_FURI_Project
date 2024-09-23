@@ -47,7 +47,7 @@ export default function MainPage() {
   };
   // Handle row click to navigate to details page
   const handleRowClick = (containerNumber: string) => {
-    router.push(`/cntr_detail?containerNumber=${containerNumber}`);
+    router.push(`/cntr_detail/${containerNumber}`);
   };
 
   return (

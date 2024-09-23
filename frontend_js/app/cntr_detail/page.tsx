@@ -1,5 +1,6 @@
 "use client"; // Mark this as a client component
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // Assuming you have the same data structure as in the MainPage
@@ -21,27 +22,30 @@ const generateData = () => {
 
 export default function ContainerDetailPage() {
   const router = useRouter();
+  const params = useParams();
   const [containerData, setContainerData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // router.isReady를 통해 라우터가 준비되었는지 확인합니다.
-    if (router.isReady) {
-      const { containerNumber } = router.query; // router.query가 준비되었을 때에만 실행됩니다.
+    const containerNumber = params.containerNumber;
 
-      if (containerNumber) {
-        const data = generateData();
-        const selectedContainer = data.find(
-          (container) => container.containerNumber === containerNumber
-        );
-        setContainerData(selectedContainer);
-      }
+    if (containerNumber) {
+      const data = generateData();
+      const selectedContainer = data.find(
+        (container) => container.containerNumber === containerNumber
+      );
+      setContainerData(selectedContainer || null);
     }
-  }, [router.isReady, router.query]);
+    setIsLoading(false);
+  }, [params.containerNumber]);
 
-  if (!containerData) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
+  if (!containerData) {
+    return <div>Container not found</div>;
+  }
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-2">
       <div className="container max-w-full bg-white p-4 shadow-md rounded-lg">
