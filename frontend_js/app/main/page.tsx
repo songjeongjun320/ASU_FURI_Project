@@ -10,6 +10,9 @@ const generateRandomAlphabets = (length: number) => {
     .join("");
 };
 
+// THIS PART DON'T MAKE THE CODE GENERATE THE SAME DATA EVERY TIME, JUST MAKE THE OTHERE TXT FILE
+// FOR THE DB FOR A WHILE AND PUT IT HERE.
+
 // Mock data generation (100 items)
 const generateData = () => {
   const data = [];
