@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [videos, setVideos] = useState([]); // 비디오 목록 상태
-  const [selectedVideo, setSelectedVideo] = useState(null); // 선택된 비디오
-  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [videos, setVideos] = useState([]);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // API를 호출해 비디오 목록 가져오기
   const fetchVideos = async () => {
     try {
       setLoading(true);
@@ -23,32 +22,27 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchVideos(); // 컴포넌트 마운트 시 API 호출
+    fetchVideos();
   }, []);
 
-  // 드래그 시작 이벤트
   const handleDragStart = (e, video) => {
-    e.dataTransfer.setData("video", JSON.stringify(video)); // 드래그 데이터에 비디오 정보를 저장
+    e.dataTransfer.setData("video", JSON.stringify(video));
   };
 
-  // 드롭 이벤트
   const handleDrop = (e) => {
     e.preventDefault();
-    const video = JSON.parse(e.dataTransfer.getData("video")); // 드래그된 비디오 데이터 가져오기
-    setSelectedVideo(video); // 선택된 비디오를 업데이트
+    const video = JSON.parse(e.dataTransfer.getData("video"));
+    setSelectedVideo(video);
   };
 
-  // 드래그 오버 이벤트
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
-  // Cancel 버튼 클릭 이벤트
   const handleCancelClick = () => {
-    setSelectedVideo(null); // 선택된 비디오 초기화
+    setSelectedVideo(null);
   };
 
-  // Extract 버튼 클릭 이벤트
   const handleExtractClick = () => {
     console.log("Extract Container Information button clicked.");
   };
@@ -58,17 +52,19 @@ export default function Home() {
       style={{
         padding: "20px",
         fontFamily: "Roboto, sans-serif",
-        backgroundColor: "maroon",
+        backgroundColor: "#1a1a2e",
         minHeight: "100vh",
-        color: "#fff",
+        color: "#ffffff",
+        lineHeight: "1.6",
       }}
     >
       <h1
         style={{
           textAlign: "center",
           marginBottom: "30px",
-          fontSize: "28px",
-          fontWeight: "600",
+          fontSize: "32px",
+          fontWeight: "700",
+          color: "#e94560",
         }}
       >
         Yard Management System Prototype
@@ -76,26 +72,29 @@ export default function Home() {
       <div
         style={{
           display: "flex",
-          gap: "20px",
+          gap: "30px",
           justifyContent: "space-between",
         }}
       >
-        {/* 왼쪽: 비디오 목록 */}
         <div
           style={{
             flex: 1.5,
             padding: "20px",
-            border: "1px solid #e0e0e0",
+            border: "1px solid #333",
             borderRadius: "12px",
-            backgroundColor: "#ffffff",
-            color: "#333",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            maxHeight: "500px",
+            backgroundColor: "#161625",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+            maxHeight: "520px",
             overflowY: "auto",
           }}
         >
           <h2
-            style={{ marginBottom: "20px", fontSize: "18px", color: "maroon" }}
+            style={{
+              marginBottom: "20px",
+              fontSize: "20px",
+              fontWeight: "600",
+              color: "#e94560",
+            }}
           >
             Available Videos
           </h2>
@@ -108,7 +107,7 @@ export default function Home() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "15px",
+                gap: "20px",
               }}
             >
               {videos.map((video) => {
@@ -119,19 +118,16 @@ export default function Home() {
                     draggable
                     onDragStart={(e) => handleDragStart(e, video)}
                     style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      padding: "10px",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#fafafa",
-                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                      padding: "15px",
+                      border: "1px solid #444",
+                      borderRadius: "10px",
+                      backgroundColor: "#252539",
+                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
                       cursor: "grab",
                       transition: "transform 0.2s ease",
                     }}
                     onMouseOver={(e) =>
-                      (e.currentTarget.style.transform = "scale(1.02)")
+                      (e.currentTarget.style.transform = "scale(1.05)")
                     }
                     onMouseOut={(e) =>
                       (e.currentTarget.style.transform = "scale(1)")
@@ -141,13 +137,13 @@ export default function Home() {
                       style={{
                         marginBottom: "10px",
                         textAlign: "center",
-                        fontSize: "14px",
-                        color: "#333",
+                        fontSize: "16px",
+                        color: "#fff",
                       }}
                     >
                       {video.name}
                     </h4>
-                    <video controls width="250">
+                    <video controls width="100%">
                       <source src={videoURL} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
@@ -160,49 +156,57 @@ export default function Home() {
           )}
         </div>
 
-        {/* 오른쪽: 선택된 비디오 박스 */}
         <div
           style={{
             flex: 1.5,
             padding: "20px",
-            border: "1px solid #e0e0e0",
+            border: "1px solid #333",
             borderRadius: "12px",
-            backgroundColor: "#ffffff",
-            color: "#333",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#161625",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
           }}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >
           <h2
-            style={{ marginBottom: "20px", fontSize: "18px", color: "maroon" }}
+            style={{
+              marginBottom: "30px",
+              fontSize: "20px",
+              fontWeight: "600",
+              color: "#e94560",
+            }}
           >
             Selected Video
           </h2>
           {selectedVideo ? (
             <div
               style={{
-                padding: "15px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                backgroundColor: "#fafafa",
-                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                padding: "20px",
+                border: "1px solid #444",
+                borderRadius: "10px",
+                backgroundColor: "#252539",
                 marginBottom: "20px",
               }}
             >
-              <h4 style={{ color: "#333" }}>{selectedVideo.name}</h4>
+              <h4 style={{ color: "#fff" }}>{selectedVideo.name}</h4>
             </div>
           ) : (
-            <p style={{ color: "#bbb", fontStyle: "italic" }}>
+            <p
+              style={{
+                color: "#bbb",
+                fontStyle: "italic",
+                marginBottom: "40px",
+              }}
+            >
               Drag and drop a video here
             </p>
           )}
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "15px" }}>
             <button
               onClick={handleExtractClick}
               style={{
-                padding: "12px 24px",
-                backgroundColor: "maroon",
+                padding: "12px 20px",
+                backgroundColor: "#e94560",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",
@@ -211,10 +215,10 @@ export default function Home() {
                 transition: "background-color 0.3s ease",
               }}
               onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#6a1b1b")
+                (e.currentTarget.style.backgroundColor = "#c0394a")
               }
               onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "maroon")
+                (e.currentTarget.style.backgroundColor = "#e94560")
               }
             >
               Extract Container Information
@@ -222,8 +226,8 @@ export default function Home() {
             <button
               onClick={handleCancelClick}
               style={{
-                padding: "12px 24px",
-                backgroundColor: "#dc3545",
+                padding: "12px 20px",
+                backgroundColor: "#f15a24",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",
@@ -232,42 +236,81 @@ export default function Home() {
                 transition: "background-color 0.3s ease",
               }}
               onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#a71d2a")
+                (e.currentTarget.style.backgroundColor = "#d14927")
               }
               onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#dc3545")
+                (e.currentTarget.style.backgroundColor = "#f15a24")
               }
             >
               Cancel
             </button>
           </div>
-
-          {/* 설명 섹션 */}
           <div
             style={{
               marginTop: "30px",
               padding: "20px",
-              border: "1px solid #ddd",
+              border: "1px solid #333",
               borderRadius: "12px",
-              backgroundColor: "#f9f9f9",
+              backgroundColor: "#161625",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              color: "#ddd",
               lineHeight: "1.6",
-              color: "#555",
             }}
           >
-            <h3 style={{ fontSize: "20px", marginBottom: "10px" }}>
+            <h2
+              style={{
+                fontSize: "24px",
+                marginBottom: "10px",
+                fontWeight: "700",
+                color: "#e94560",
+              }}
+            >
               About This Project
-            </h3>
-            <p style={{ fontSize: "16px" }}>
-              This prototype is part of the Yard Management System automation
-              project in the transportation industry. Users can select a video
-              and drop it into the designated box. The selected video will be
-              processed using machine learning to extract container number
-              information. The extracted data will be processed using AWS
-              Textract, and the system will update the container details along
-              with the timestamp automatically.
+            </h2>
+            <p style={{ fontSize: "18px", marginBottom: "10px" }}>
+              This prototype is part of the <b>Yard Management System</b>{" "}
+              automation project in the transportation industry. Users can
+              select a video and drop it into the designated box. The selected
+              video will be processed using machine learning to extract{" "}
+              <b>container number</b> information. The extracted data will be
+              processed using <b>AWS Textract</b>, and the system will update
+              the container details along with the <b>timestamp</b>{" "}
+              automatically.
             </p>
           </div>
         </div>
+      </div>
+
+      <div
+        style={{
+          marginTop: "30px",
+          padding: "20px",
+          border: "1px solid #333",
+          borderRadius: "12px",
+          backgroundColor: "#161625",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          color: "#ddd",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "24px",
+            marginBottom: "10px",
+            fontWeight: "700",
+            color: "#e94560",
+          }}
+        >
+          How can you test?
+        </h2>
+        <p>
+          <b>1.</b> Choose a sample video showing a truck's movement with a
+          container.<br></br>
+          <b>2.</b> Drag it to <b>Selected Video</b> and click{" "}
+          <b>Extract Container Information</b>.<br></br>
+          <b>3.</b> The <b>YOLO</b> model will process and crop the container
+          image.<br></br>
+          <b>4.</b> Extracted data will be sent to <b>AWS Textract</b> for OCR.
+        </p>
       </div>
     </div>
   );
