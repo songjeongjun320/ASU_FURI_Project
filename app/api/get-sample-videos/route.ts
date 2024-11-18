@@ -10,7 +10,7 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
-const BUCKET_NAME = "sample_videos";
+const BUCKET_NAME = process.env.NEXT_PUBLIC_STORAGE_BUCKET;
 
 export async function GET() {
   try {

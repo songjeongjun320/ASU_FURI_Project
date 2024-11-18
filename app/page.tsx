@@ -32,6 +32,8 @@ export default function Home() {
   const handleDrop = (e) => {
     e.preventDefault();
     const video = JSON.parse(e.dataTransfer.getData("video"));
+    // console.log("LOG-- video name: ", video.name);
+    // console.log("LOG-- date: ", video.created_at);
     setSelectedVideo(video);
   };
 
@@ -40,11 +42,57 @@ export default function Home() {
   };
 
   const handleCancelClick = () => {
+    console.log("Extract Container Information button clicked.");
     setSelectedVideo(null);
   };
 
-  const handleExtractClick = () => {
-    console.log("Extract Container Information button clicked.");
+  const handleExtractClick = async () => {
+    try {
+      console.log("Extract Container Information button clicked.");
+
+      if (selectedVideo && selectedVideo.name) {
+        console.log("Selected video name: ", selectedVideo.name);
+
+        // Create a new FormData object to send the video name
+        const formData = new FormData();
+        formData.append("video_name", selectedVideo.name);
+        console.log("LOG-- FORMDATA: ", formData);
+
+        // Call processYOLO with the formData
+        const result = await processYOLO(formData);
+
+        // Log the result or perform further actions with it
+        console.log("Processed result: ", result);
+      } else {
+        console.log("No video selected.");
+      }
+    } catch (error) {
+      console.error("Error during handleExtractClick: ", error);
+    }
+  };
+
+  const processYOLO = async (formData) => {
+    try {
+      // Send the video name to the Flask server
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_LOCAL!}/process_yolo`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to process the video");
+      }
+
+      // Parse the response from the server
+      const result = await response.text(); // Assuming the server returns text data
+      return result; // Return the result to the calling function
+    } catch (error) {
+      console.error("Error processing YOLO:", error);
+      throw error; // Rethrow the error to handle it in the calling function
+    }
   };
 
   return (
