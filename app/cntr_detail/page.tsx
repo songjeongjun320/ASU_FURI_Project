@@ -42,41 +42,78 @@ export default function ContainerDetailPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-2">
-      <div className="container max-w-full bg-white p-4 shadow-md rounded-lg">
-        <h1 className="text-xl font-bold text-center mb-3">
+    <div
+      className="min-h-screen flex flex-col justify-center items-center p-2"
+      style={{ backgroundColor: "#1a1a2e", color: "#ffffff" }}
+    >
+      <div
+        className="container max-w-full p-4 shadow-md rounded-lg"
+        style={{
+          backgroundColor: "#161625",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <h1
+          className="text-xl font-bold text-center mb-3"
+          style={{ color: "#e94560" }}
+        >
           Container Details
         </h1>
-        <div className="container-details">
+        <div>
           <button
             onClick={() => router.back()}
-            className="bg-[#FFD700] text-[#800000] px-4 py-2 rounded mb-4"
+            className="px-4 py-2 rounded mb-4"
+            style={{
+              backgroundColor: "#e94560",
+              color: "#ffffff",
+              border: "none",
+              cursor: "pointer",
+              transition: "background-color 0.3s ease",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "#c0394a")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "#e94560")
+            }
           >
             Back
           </button>
-          <div className="container-info">
+          <div>
             <p>
-              <strong>Container Number:</strong> {containerData.containerNumber}
+              <strong style={{ color: "#e94560" }}>Container Number:</strong>{" "}
+              {containerData.containerNumber}
             </p>
             <p>
-              <strong>Date:</strong> {containerData.date}
+              <strong style={{ color: "#e94560" }}>Date:</strong>{" "}
+              {containerData.date}
             </p>
             <p>
-              <strong>Time:</strong> {containerData.time}
+              <strong style={{ color: "#e94560" }}>Time:</strong>{" "}
+              {containerData.time}
             </p>
             <p>
-              <strong>In/Out:</strong> {containerData.inOut}
+              <strong style={{ color: "#e94560" }}>In/Out:</strong>{" "}
+              {containerData.inOut}
             </p>
             <p>
-              <strong>Container Size:</strong> {containerData.size}
+              <strong style={{ color: "#e94560" }}>Container Size:</strong>{" "}
+              {containerData.size}
             </p>
             <p>
-              <strong>Driver Name:</strong> {containerData.driver}
+              <strong style={{ color: "#e94560" }}>Driver Name:</strong>{" "}
+              {containerData.driver}
             </p>
             <img
               src={containerData.picture}
               alt="Container"
               className="w-48 h-48 object-cover mt-4"
+              style={{
+                border: "1px solid #444",
+                borderRadius: "10px",
+                backgroundColor: "#252539",
+                padding: "8px",
+              }}
             />
           </div>
         </div>
