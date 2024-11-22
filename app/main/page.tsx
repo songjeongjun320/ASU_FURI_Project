@@ -1,51 +1,81 @@
-"use client"; // Mark this as a client component
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-const generateRandomAlphabets = (length: number) => {
-  return Array(length)
-    .fill(0)
-    .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
-    .join("");
-};
-
-const generateRandomNumbers = (length: number) => {
-  return Array(length)
-    .fill(0)
-    .map(() => Math.floor(Math.random() * 10)) // 랜덤 숫자 0~9
-    .join("");
-};
-
-const generateData = () => {
-  const data = Array.from({ length: 100 }, (_, i) => ({
-    containerNumber: `${generateRandomAlphabets(4)}${generateRandomNumbers(7)}`, // 4자리 알파벳 + 7자리 숫자
-    date: `2023-09-${((i % 30) + 1).toString().padStart(2, "0")}`, // Format: YYYY-MM-DD
-    time: `${12 + (i % 12)}:00`,
-    inOut: i % 2 === 0 ? "In" : "Out",
-    size: i % 3 === 0 ? "Large" : i % 2 === 0 ? "Medium" : "Small",
-    driver: `Driver ${i + 1}`,
-    picture: "image_placeholder.jpg",
-  }));
-  return data;
-};
 
 export default function MainPage() {
   const router = useRouter();
-  const containerData = generateData();
-
-  // Sort the data by date in descending order
-  const sortedContainerData = containerData.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-
+  const [containerData, setContainerData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 40; // Show 40 items per page
 
+  useEffect(() => {
+    // API에서 데이터 가져오기 및 이미지 URL 연결
+    const fetchData = async () => {
+      try {
+        console.log("LOG-- Fetching data from API...");
+        const response = await fetch("/api/get-table");
+
+        if (!response.ok) {
+          throw new Error(`LOG-- Error fetching data: ${response.statusText}`);
+        }
+
+        let data = await response.json();
+        console.log("LOG-- Data fetched successfully:", data);
+
+        // 날짜와 시간 기준으로 정렬
+        data.sort((a: any, b: any) => {
+          const dateA = new Date(`${a.date}T${a.time}`);
+          const dateB = new Date(`${b.date}T${b.time}`);
+          return dateB.getTime() - dateA.getTime(); // 최신순 정렬
+        });
+
+        // 이미지 URL 가져오기
+        const updatedData = await Promise.all(
+          data.map(async (item: any) => {
+            try {
+              const imgResponse = await fetch(
+                `/api/get-cntr-imgs?id=${item.id}`
+              );
+              const imgData = await imgResponse.json();
+
+              if (!imgResponse.ok) {
+                console.error(
+                  `LOG-- Error fetching image for ID ${item.id}:`,
+                  imgData.error
+                );
+                return { ...item, image: "https://via.placeholder.com/150" }; // 기본 이미지
+              }
+
+              console.log(
+                `LOG-- Image fetched for ID ${item.id}:`,
+                imgData.url
+              );
+              return { ...item, image: imgData.url }; // 이미지 URL 추가
+            } catch (error) {
+              console.error(
+                `LOG-- Error fetching image for ID ${item.id}:`,
+                error
+              );
+              return { ...item, image: "https://via.placeholder.com/150" }; // 기본 이미지
+            }
+          })
+        );
+
+        console.log("LOG-- Data with images:", updatedData);
+        setContainerData(updatedData || []);
+      } catch (error) {
+        console.error("LOG-- Error fetching data from API:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // Filter containers by search term
-  const filteredData = sortedContainerData.filter((container) =>
-    container.containerNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = containerData.filter((container) =>
+    container.cntr_number?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Pagination logic
@@ -55,32 +85,46 @@ export default function MainPage() {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const nextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) {
+      console.log("LOG-- Navigating to next page:", currentPage + 1);
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   const prevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) {
+      console.log("LOG-- Navigating to previous page:", currentPage - 1);
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const handleRowClick = (containerNumber: string) => {
+    console.log("LOG-- Row clicked, container number:", containerNumber);
     router.push(`/cntr_detail/${containerNumber}`);
   };
 
   return (
     <div
-      className="min-h-screen flex flex-col justify-center items-center p-2"
-      style={{ backgroundColor: "#1a1a2e", color: "#ffffff" }}
+      className="flex flex-col items-start p-2"
+      style={{
+        backgroundColor: "#1a1a2e",
+        color: "#ffffff",
+        minHeight: "100vh",
+        paddingTop: "20px", // 위쪽 여백 추가
+        paddingLeft: "20px", // 왼쪽 여백 추가
+      }}
     >
       <div
         className="container max-w-full p-4 shadow-md rounded-lg"
         style={{
           backgroundColor: "#161625",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          width: "calc(100% - 40px)", // 전체 화면에서 패딩만큼 축소
         }}
       >
         <h1
-          className="text-xl font-bold text-center mb-3"
-          style={{ color: "#e94560" }}
+          className="text-xl font-bold mb-5"
+          style={{ color: "#e94560", textAlign: "center", fontSize: 30 }} // 제목을 왼쪽 정렬
         >
           Container Information
         </h1>
@@ -92,7 +136,7 @@ export default function MainPage() {
           placeholder="Search for container number..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="block w-full max-w-lg mx-auto px-4 py-2 mb-4 border rounded-md text-sm focus:outline-none"
+          className="block w-full max-w-lg px-4 py-2 mb-4 border rounded-md text-sm focus:outline-none"
           style={{
             backgroundColor: "#252539",
             color: "#ffffff",
@@ -108,28 +152,28 @@ export default function MainPage() {
         >
           <thead style={{ backgroundColor: "#252539", color: "#e94560" }}>
             <tr>
-              <th className="border px-2 py-1">Container Number</th>
-              <th className="border px-2 py-1">Date</th>
-              <th className="border px-2 py-1">Time</th>
-              <th className="border px-2 py-1">In/Out</th>
-              <th className="border px-2 py-1">Container Size</th>
-              <th className="border px-2 py-1">Driver Name</th>
-              <th className="border px-2 py-1">Picture</th>
+              <th className="border px-2 py-1 text-left">Container Number</th>
+              <th className="border px-2 py-1 text-left">Date</th>
+              <th className="border px-2 py-1 text-left">Time</th>
+              <th className="border px-2 py-1 text-left">In/Out</th>
+              <th className="border px-2 py-1 text-left">Container Size</th>
+              <th className="border px-2 py-1 text-left">Driver Name</th>
+              <th className="border px-2 py-1 text-left">Container Image</th>
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((container, index) => (
+            {currentItems.map((container) => (
               <tr
-                key={index}
+                key={container.id}
                 className="hover:bg-gray-100"
                 style={{ cursor: "pointer", backgroundColor: "#252539" }}
               >
                 <td
                   className="border px-2 py-1"
                   style={{ color: "#ffffff" }}
-                  onClick={() => handleRowClick(container.containerNumber)}
+                  onClick={() => handleRowClick(container.cntr_number)}
                 >
-                  {container.containerNumber}
+                  {container.cntr_number}
                 </td>
                 <td className="border px-2 py-1" style={{ color: "#ffffff" }}>
                   {container.date}
@@ -138,19 +182,24 @@ export default function MainPage() {
                   {container.time}
                 </td>
                 <td className="border px-2 py-1" style={{ color: "#ffffff" }}>
-                  {container.inOut}
+                  {container.in_out ? "In" : "Out"}
                 </td>
                 <td className="border px-2 py-1" style={{ color: "#ffffff" }}>
-                  {container.size}
+                  {container.cntr_size}
                 </td>
                 <td className="border px-2 py-1" style={{ color: "#ffffff" }}>
-                  {container.driver}
+                  {container.driver_name}
                 </td>
                 <td className="border px-2 py-1">
                   <img
-                    src={container.picture}
+                    src={container.image || "https://via.placeholder.com/150"}
                     alt="Container"
-                    className="w-12 h-12 object-cover"
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      objectFit: "cover",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
               </tr>
