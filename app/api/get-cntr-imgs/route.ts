@@ -20,10 +20,13 @@ export async function GET(request: Request) {
       );
     }
 
+    // 숫자로 변환 후 3자리 포맷팅
+    const formattedId = parseInt(id, 10).toString().padStart(3, "0");
+
     // Supabase Storage에서 해당 이미지의 공개 URL 가져오기
     const { data } = supabase.storage
       .from(bucketname)
-      .getPublicUrl(`${id}.jpg`);
+      .getPublicUrl(`${formattedId}.jpg`);
 
     if (!data || !data.publicUrl) {
       console.error("Error fetching image from storage: No public URL found.");

@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // useRouter import
 
 export default function Home() {
   const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [driverName, setDriverName] = useState(""); // Driver Name 상태 추가
   const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
 
   const fetchVideos = async () => {
     try {
@@ -32,8 +36,6 @@ export default function Home() {
   const handleDrop = (e) => {
     e.preventDefault();
     const video = JSON.parse(e.dataTransfer.getData("video"));
-    // console.log("LOG-- video name: ", video.name);
-    // console.log("LOG-- date: ", video.created_at);
     setSelectedVideo(video);
   };
 
@@ -42,38 +44,12 @@ export default function Home() {
   };
 
   const handleCancelClick = () => {
-    console.log("Extract Container Information button clicked.");
     setSelectedVideo(null);
-  };
-
-  const handleExtractClick = async () => {
-    try {
-      console.log("Extract Container Information button clicked.");
-
-      if (selectedVideo && selectedVideo.name) {
-        console.log("Selected video name: ", selectedVideo.name);
-
-        // Create a new FormData object to send the video name
-        const formData = new FormData();
-        formData.append("video_name", selectedVideo.name);
-        console.log("LOG-- FORMDATA: ", formData);
-
-        // Call processYOLO with the formData
-        const result = await processYOLO(formData);
-
-        // Log the result or perform further actions with it
-        console.log("Processed result: ", result);
-      } else {
-        console.log("No video selected.");
-      }
-    } catch (error) {
-      console.error("Error during handleExtractClick: ", error);
-    }
+    setDriverName(""); // Driver Name 초기화
   };
 
   const processYOLO = async (formData) => {
     try {
-      // Send the video name to the Flask server
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_LOCAL!}/process_yolo`,
         {
@@ -86,12 +62,38 @@ export default function Home() {
         throw new Error("Failed to process the video");
       }
 
-      // Parse the response from the server
-      const result = await response.text(); // Assuming the server returns text data
-      return result; // Return the result to the calling function
+      const result = await response.text();
+      return result;
     } catch (error) {
       console.error("Error processing YOLO:", error);
-      throw error; // Rethrow the error to handle it in the calling function
+      throw error;
+    }
+  };
+
+  const handleExtractClick = async () => {
+    try {
+      if (selectedVideo && selectedVideo.name) {
+        console.log("Selected video name: ", selectedVideo.name);
+        console.log("Driver name: ", driverName); // Driver Name 출력
+
+        // Create a new FormData object to send the video name and driver name
+        const formData = new FormData();
+        formData.append("video_name", selectedVideo.name);
+        formData.append("driver_name", driverName); // Add driver name to formData
+
+        // Call processYOLO with the formData and driverName
+        const result = await processYOLO(formData);
+
+        // Log the result or perform further actions with it
+        console.log("Processed result: ", result);
+
+        // 성공적으로 처리되었으면 main/page.tsx로 이동
+        router.push("/main");
+      } else {
+        console.log("No video selected.");
+      }
+    } catch (error) {
+      console.error("Error during handleExtractClick: ", error);
     }
   };
 
@@ -243,12 +245,29 @@ export default function Home() {
               style={{
                 color: "#bbb",
                 fontStyle: "italic",
-                marginBottom: "40px",
+                marginBottom: "20px",
               }}
             >
               Drag and drop a video here
             </p>
           )}
+          <div style={{ marginBottom: "20px" }}>
+            <input
+              type="text"
+              placeholder="Driver Name"
+              value={driverName}
+              onChange={(e) => setDriverName(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "15px",
+                height: "40px",
+                borderRadius: "8px",
+                border: "1px solid #444",
+                backgroundColor: "#252539",
+                color: "#fff",
+              }}
+            />
+          </div>
           <div style={{ display: "flex", gap: "15px" }}>
             <button
               onClick={handleExtractClick}
