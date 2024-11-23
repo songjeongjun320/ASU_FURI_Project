@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation"; // useRouter import
 export default function Home() {
   const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [driverName, setDriverName] = useState(""); // Driver Name 상태 추가
+  const [driverName, setDriverName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -45,7 +46,7 @@ export default function Home() {
 
   const handleCancelClick = () => {
     setSelectedVideo(null);
-    setDriverName(""); // Driver Name 초기화
+    setDriverName("");
   };
 
   const processYOLO = async (formData) => {
@@ -72,28 +73,25 @@ export default function Home() {
 
   const handleExtractClick = async () => {
     try {
+      setIsLoading(true);
       if (selectedVideo && selectedVideo.name) {
         console.log("Selected video name: ", selectedVideo.name);
-        console.log("Driver name: ", driverName); // Driver Name 출력
+        console.log("Driver name: ", driverName);
 
-        // Create a new FormData object to send the video name and driver name
         const formData = new FormData();
         formData.append("video_name", selectedVideo.name);
-        formData.append("driver_name", driverName); // Add driver name to formData
+        formData.append("driver_name", driverName);
 
-        // Call processYOLO with the formData and driverName
         const result = await processYOLO(formData);
-
-        // Log the result or perform further actions with it
         console.log("Processed result: ", result);
-
-        // 성공적으로 처리되었으면 main/page.tsx로 이동
         router.push("/main");
       } else {
         console.log("No video selected.");
       }
     } catch (error) {
       console.error("Error during handleExtractClick: ", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -269,27 +267,45 @@ export default function Home() {
             />
           </div>
           <div style={{ display: "flex", gap: "15px" }}>
-            <button
-              onClick={handleExtractClick}
-              style={{
-                padding: "12px 20px",
-                backgroundColor: "#e94560",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                fontWeight: "600",
-                cursor: "pointer",
-                transition: "background-color 0.3s ease",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#c0394a")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#e94560")
-              }
-            >
-              Extract Container Information
-            </button>
+            {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "50px",
+                  height: "50px",
+                  border: "5px solid #555",
+                  borderTop: "5px solid #e94560",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite",
+                }}
+              ></div>
+            ) : (
+              <>
+                <button
+                  onClick={handleExtractClick}
+                  style={{
+                    padding: "12px 20px",
+                    backgroundColor: "#e94560",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s ease",
+                  }}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#c0394a")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#e94560")
+                  }
+                >
+                  Extract Container Information
+                </button>
+              </>
+            )}
             <button
               onClick={handleCancelClick}
               style={{
@@ -347,7 +363,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       <div
         style={{
           marginTop: "30px",
@@ -371,11 +386,13 @@ export default function Home() {
         </h2>
         <p>
           <b>1.</b> Choose a sample video showing a truck's movement with a
-          container.<br></br>
+          container.
+          <br />
           <b>2.</b> Drag it to <b>Selected Video</b> and click{" "}
-          <b>Extract Container Information</b>.<br></br>
+          <b>Extract Container Information</b>.<br />
           <b>3.</b> The <b>YOLO</b> model will process and crop the container
-          image.<br></br>
+          image.
+          <br />
           <b>4.</b> Extracted data will be sent to <b>AWS Textract</b> for OCR.
         </p>
       </div>
