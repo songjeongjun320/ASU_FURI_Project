@@ -48,6 +48,10 @@ export default function Home() {
     setSelectedVideo(null);
     setDriverName("");
   };
+  // Back 버튼 핸들러
+  const handleMain = () => {
+    router.push("/main"); // 루트 페이지로 이동
+  };
 
   const processYOLO = async (formData) => {
     try {
@@ -106,6 +110,24 @@ export default function Home() {
         lineHeight: "1.6",
       }}
     >
+      {/* Back 버튼 추가 */}
+      <button
+        onClick={handleMain}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "20px",
+          backgroundColor: "#e94560",
+          color: "#ffffff",
+          padding: "10px 20px",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "14px",
+        }}
+      >
+        Main
+      </button>
       <h1
         style={{
           textAlign: "center",

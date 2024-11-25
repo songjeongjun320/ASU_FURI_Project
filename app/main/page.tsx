@@ -103,6 +103,11 @@ export default function MainPage() {
     router.push(`/cntr_detail/${containerNumber}`);
   };
 
+  // Back 버튼 핸들러
+  const handleBack = () => {
+    router.push("/"); // 루트 페이지로 이동
+  };
+
   return (
     <div
       className="flex flex-col items-start p-2"
@@ -114,6 +119,25 @@ export default function MainPage() {
         paddingLeft: "20px", // 왼쪽 여백 추가
       }}
     >
+      {/* Back 버튼 추가 */}
+      <button
+        onClick={handleBack}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "20px",
+          backgroundColor: "#e94560",
+          color: "#ffffff",
+          padding: "10px 20px",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "14px",
+        }}
+      >
+        Back
+      </button>
+
       <div
         className="container max-w-full p-4 shadow-md rounded-lg"
         style={{
