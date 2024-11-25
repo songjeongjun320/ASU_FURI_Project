@@ -85,10 +85,20 @@ export default function Home() {
         const formData = new FormData();
         formData.append("video_name", selectedVideo.name);
         formData.append("driver_name", driverName);
+        try {
+          const result = await processYOLO(formData); // processYOLO 함수 호출
+          const jsonResult = JSON.parse(result); // Parse the string result to JSON
+          console.log("Extracted Result:", jsonResult.extracted_result); // Container number 출력
+          console.log("New ID:", jsonResult.new_id); // New ID 출력
 
-        const result = await processYOLO(formData);
-        console.log("Processed result: ", result);
-        router.push("/main");
+          // new_id를 변수로 저장하거나 다른 로직에서 사용
+          const newId = jsonResult.new_id;
+          router.push(`/result_video_page?newId=${encodeURIComponent(newId)}`);
+
+          console.log("Using newId for further processing:", newId);
+        } catch (error) {
+          console.error("Error while processing YOLO:", error.message);
+        }
       } else {
         console.log("No video selected.");
       }
