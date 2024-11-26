@@ -1,106 +1,49 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation"; // next/navigation에서 useRouter를 가져옵니다.
 
 export default function ResultVideoPage() {
-  const [videoURL, setVideoURL] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const [newId, setNewId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [videoURL, setVideoURL] = useState<string | null>(null);
 
+  // newId 가져오기
   useEffect(() => {
-    console.log("LOG-- Extracting newId from URL parameters...");
-    const params = new URLSearchParams(window.location.search);
-    const newId = params.get("newId");
-
-    console.log("LOG-- Extracted newId:", newId);
+    const newId = searchParams.get("newId");
 
     if (newId) {
-      try {
-        console.log("LOG-- Formatting newId to 3 digits...");
-        const formattedId = newId.padStart(3, "0");
-        console.log("LOG-- Formatted newId:", formattedId);
-
-        console.log("LOG-- Constructing video URL...");
-        const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/result_videos/${formattedId}.mp4`;
-        console.log("LOG-- Constructed video URL:", url);
-
-        setVideoURL(url);
-      } catch (err) {
-        console.error("LOG-- Error constructing video URL:", err);
-        setError("Failed to construct video URL.");
-      }
+      setNewId(newId);
     } else {
-      console.error("LOG-- No newId provided in URL parameters.");
       setError("No newId provided in URL parameters.");
     }
-  }, []);
+  }, [searchParams]);
+
+  // videoURL 직접 생성
+  useEffect(() => {
+    if (newId) {
+      // newId에 맞는 형식으로 비디오 파일 URL 생성 (예: 003.mp4)
+      const formattedId = newId.padStart(3, "0"); // 3자리로 패딩
+      const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_STORAGE_RESULT_VIDEO_BUCKET}/${formattedId}.mp4`;
+      setVideoURL(url);
+    }
+  }, [newId]);
 
   if (error) {
-    console.error("LOG-- Error detected:", error);
     return <div>Error: {error}</div>;
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col justify-center items-center p-2"
-      style={{ backgroundColor: "#1a1a2e", color: "#ffffff" }}
-    >
-      <div
-        className="container max-w-full p-4 shadow-md rounded-lg"
-        style={{
-          backgroundColor: "#161625",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <h1
-          className="text-xl font-bold text-center mb-3"
-          style={{ color: "#e94560" }}
-        >
-          Result Video
-        </h1>
-        {videoURL ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "20px",
-              padding: "15px",
-              border: "1px solid #444",
-              borderRadius: "10px",
-              backgroundColor: "#252539",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-            }}
-          >
-            <h4
-              style={{
-                marginBottom: "10px",
-                textAlign: "center",
-                fontSize: "16px",
-                color: "#fff",
-              }}
-            >
-              Video Name: {videoURL.split("/").pop()}
-            </h4>
-            <video
-              controls
-              width="100%"
-              onError={() =>
-                console.error(
-                  `LOG-- Failed to load video from URL: ${videoURL}`
-                )
-              }
-              style={{
-                borderRadius: "8px",
-                backgroundColor: "#000",
-              }}
-            >
-              <source src={videoURL} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        ) : (
-          <p>No video found</p>
-        )}
-      </div>
+    <div>
+      {videoURL ? (
+        <video controls width="100%">
+          <source src={videoURL} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <p>Loading video...</p>
+      )}
     </div>
   );
 }
