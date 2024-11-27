@@ -2,15 +2,33 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
+
+// Supabase 클라이언트 초기화
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function MainPage() {
   const router = useRouter();
   const [containerData, setContainerData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [newId, setNewId] = useState<string | null>(null); // newId 상태 추가
   const itemsPerPage = 40; // Show 40 items per page
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    // URL에서 newId 파라미터 가져오기
+    const searchParams = new URLSearchParams(window.location.search);
+    const newIdParam = searchParams.get("newId");
+    console.log(`LOG-- newId ${newIdParam}`);
+    if (newIdParam) {
+      setNewId(newIdParam); // URL 파라미터로부터 newId를 추출하여 상태에 저장
+    }
+
     // API에서 데이터 가져오기 및 이미지 URL 연결
     const fetchData = async () => {
       try {
@@ -108,6 +126,44 @@ export default function MainPage() {
     router.push("/"); // 루트 페이지로 이동
   };
 
+  // 비디오 파일 다운로드
+  const downloadVideo = async () => {
+    if (!newId) return;
+
+    setLoading(true);
+    try {
+      const formattedId = newId.padStart(3, "0"); // newId를 3자리로 패딩
+      const fileName = `${formattedId}.mp4`;
+
+      // Supabase에서 비디오 파일 다운로드
+      const { data, error } = await supabase.storage
+        .from(process.env.NEXT_PUBLIC_STORAGE_RESULT_VIDEO_BUCKET) // bucket 이름 ("avatars"을 실제 bucket 이름으로 바꿔야 할 수 있음)
+        .download(`${fileName}`); // 파일 경로 (예: folder/003.mp4)
+
+      if (error) {
+        setError("Error downloading file: " + error.message);
+        setLoading(false);
+        return;
+      }
+
+      // 다운로드된 데이터를 Blob URL로 변환
+      const url = URL.createObjectURL(data);
+
+      // 링크 생성 및 클릭하여 다운로드 시작
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+
+      // 다운로드가 끝난 후 URL 해제
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       className="flex flex-col items-start p-2"
@@ -136,6 +192,27 @@ export default function MainPage() {
         }}
       >
         Back
+      </button>
+
+      {/* Download Result Video 버튼 추가 */}
+      <button
+        onClick={downloadVideo}
+        disabled={!newId} // newId가 없으면 비활성화
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "20px",
+          backgroundColor: newId ? "#e94560" : "#555555", // newId가 있으면 빨간색, 없으면 회색
+          color: "#ffffff",
+          padding: "10px 20px",
+          border: "none",
+          borderRadius: "4px",
+          cursor: newId ? "pointer" : "not-allowed",
+          fontSize: "14px",
+        }}
+      >
+        {newId ? "Download Result Video" : "You didn't extract video"}{" "}
+        {/* 조건부 텍스트 */}
       </button>
 
       <div

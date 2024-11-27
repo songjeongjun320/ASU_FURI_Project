@@ -93,7 +93,7 @@ export default function Home() {
 
           // new_id를 변수로 저장하거나 다른 로직에서 사용
           const newId = jsonResult.new_id;
-          router.push(`/result_video_page?newId=${encodeURIComponent(newId)}`);
+          router.push(`/main?newId=${encodeURIComponent(newId)}`);
 
           console.log("Using newId for further processing:", newId);
         } catch (error) {
