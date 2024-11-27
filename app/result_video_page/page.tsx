@@ -37,10 +37,34 @@ export default function ResultVideoPage() {
   return (
     <div>
       {videoURL ? (
-        <video controls width="100%">
-          <source src={videoURL} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div>
+          {/* 비디오 다운로드 링크 추가 */}
+          <div>
+            <a href={videoURL} download={`${newId}.mp4`}>
+              <button
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: "#e94560", // 기존 페이지의 색상과 일치
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "background-color 0.3s ease",
+                  width: "100%", // 버튼이 화면 너비에 맞게 확장
+                }}
+                onMouseOver={
+                  (e) => (e.currentTarget.style.backgroundColor = "#c0394a") // 마우스 오버시 색상 변경
+                }
+                onMouseOut={
+                  (e) => (e.currentTarget.style.backgroundColor = "#e94560") // 마우스 오버 해제시 색상 원상복귀
+                }
+              >
+                Download Video
+              </button>
+            </a>
+          </div>
+        </div>
       ) : (
         <p>Loading video...</p>
       )}
