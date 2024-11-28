@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "utils/supabase/server"; // createSupbaseClient 가져오기
 
-// Supabase 클라이언트 생성
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_SUPABASE_SERVICE_ROLE!;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Supabase URL or Service Role Key is missing.");
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = getSupabaseClient();
 const BUCKET_NAME = process.env.NEXT_PUBLIC_STORAGE_BUCKET;
 
 export async function GET() {

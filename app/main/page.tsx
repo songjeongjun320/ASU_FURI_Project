@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+
+import { createSupbaseClient } from "utils/supabase/client"; // createSupbaseClient 가져오기
 
 // Supabase 클라이언트 초기화
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+
+const supabase = createSupbaseClient(); // 클라이언트 초기화
 
 export default function MainPage() {
   const router = useRouter();
@@ -116,9 +115,9 @@ export default function MainPage() {
     }
   };
 
-  const handleRowClick = (containerNumber: string) => {
-    console.log("LOG-- Row clicked, container number:", containerNumber);
-    router.push(`/cntr_detail/${containerNumber}`);
+  const handleRowClick = (selected_id: string) => {
+    console.log("LOG-- Row clicked, selected container id:", selected_id);
+    router.push(`/cntr_detail?newId=${encodeURIComponent(selected_id)}`);
   };
 
   // Back 버튼 핸들러
@@ -316,12 +315,9 @@ export default function MainPage() {
                 key={container.id}
                 className="hover:bg-gray-100"
                 style={{ cursor: "pointer", backgroundColor: "#252539" }}
+                onClick={() => handleRowClick(container.id)}
               >
-                <td
-                  className="border px-2 py-1"
-                  style={{ color: "#ffffff" }}
-                  onClick={() => handleRowClick(container.cntr_number)}
-                >
+                <td className="border px-2 py-1" style={{ color: "#ffffff" }}>
                   {container.cntr_number}
                 </td>
                 <td className="border px-2 py-1" style={{ color: "#ffffff" }}>

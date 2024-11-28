@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "utils/supabase/server"; // createSupbaseClient 가져오기
 
-// Supabase 클라이언트 설정
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_SUPABASE_SERVICE_ROLE!;
+const supabase = getSupabaseClient();
 const bucketname = process.env.NEXT_PUBLIC_STORAGE_CNTR_IMG_BUCKET;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function GET(request: Request) {
   try {
