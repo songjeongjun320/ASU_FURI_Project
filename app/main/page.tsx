@@ -126,6 +126,40 @@ export default function MainPage() {
     router.push("/"); // 루트 페이지로 이동
   };
 
+  // 샘플 비디오 파일 다운로드
+  const downloadSampleVideo = async () => {
+    setLoading(true);
+    try {
+      const fileName = "067.mp4";
+
+      // Supabase에서 비디오 파일 다운로드
+      const { data, error } = await supabase.storage
+        .from(process.env.NEXT_PUBLIC_STORAGE_RESULT_VIDEO_BUCKET) // bucket 이름 ("avatars"을 실제 bucket 이름으로 바꿔야 할 수 있음)
+        .download(`${fileName}`); // 파일 경로 (예: folder/003.mp4)
+
+      if (error) {
+        setError("Error downloading file: " + error.message);
+        setLoading(false);
+        return;
+      }
+
+      // 다운로드된 데이터를 Blob URL로 변환
+      const url = URL.createObjectURL(data);
+
+      // 링크 생성 및 클릭하여 다운로드 시작
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+
+      // 다운로드가 끝난 후 URL 해제
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
   // 비디오 파일 다운로드
   const downloadVideo = async () => {
     if (!newId) return;
@@ -194,26 +228,40 @@ export default function MainPage() {
         Back
       </button>
 
-      {/* Download Result Video 버튼 추가 */}
-      <button
-        onClick={downloadVideo}
-        disabled={!newId} // newId가 없으면 비활성화
-        style={{
-          position: "absolute",
-          top: "10px",
-          left: "20px",
-          backgroundColor: newId ? "#e94560" : "#555555", // newId가 있으면 빨간색, 없으면 회색
-          color: "#ffffff",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "4px",
-          cursor: newId ? "pointer" : "not-allowed",
-          fontSize: "14px",
-        }}
-      >
-        {newId ? "Download Result Video" : "You didn't extract video"}{" "}
-        {/* 조건부 텍스트 */}
-      </button>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        {/* Download Result Video 버튼 추가 */}
+        <button
+          onClick={downloadVideo}
+          disabled={!newId} // newId가 없으면 비활성화
+          style={{
+            backgroundColor: newId ? "#e94560" : "#555555", // newId가 있으면 빨간색, 없으면 회색
+            color: "#ffffff",
+            padding: "10px 20px",
+            border: "none",
+            borderRadius: "4px",
+            cursor: newId ? "pointer" : "not-allowed",
+            fontSize: "14px",
+            marginRight: "10px", // 버튼 간의 간격 조정
+          }}
+        >
+          {newId ? "Download Result Video" : "You didn't extract video"}{" "}
+          {/* 조건부 텍스트 */}
+        </button>
+        <button
+          onClick={downloadSampleVideo}
+          style={{
+            backgroundColor: "#e94560",
+            color: "#ffffff",
+            padding: "10px 20px",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          Sample Result Video
+        </button>
+      </div>
 
       <div
         className="container max-w-full p-4 shadow-md rounded-lg"
