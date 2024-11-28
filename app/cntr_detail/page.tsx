@@ -1,49 +1,61 @@
 "use client"; // Mark this as a client component
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createSupbaseClient } from "utils/supabase/client"; // createSupbaseClient 가져오기
+import { createSupbaseClient } from "utils/supabase/client"; // Supabase 클라이언트 불러오기
+
+const supabase = createSupbaseClient(); // Supabase 클라이언트 초기화
 
 export default function ContainerDetailPage() {
   const router = useRouter();
-  const [newId, setNewId] = useState<string | null>(null); // newId 상태 추가
-  const [containerData, setContainerData] = useState<any>(null); // containerData 상태
+  const [selectedId, setSelectedId] = useState<string | null>(null); // selectedId 상태 추가
+  const [imgURL, setImgUrl] = useState<string>(""); // imgURL 상태 (초기값을 빈 문자열로 설정)
+  const [containerData, setContainerData] = useState<any | null>(null); // 컨테이너 데이터 상태 추가
+  const [loading, setLoading] = useState<boolean>(false); // 로딩 상태 추가
+  const [error, setError] = useState<string | null>(null); // 에러 상태 추가
 
   useEffect(() => {
-    // URL에서 newId 파라미터 가져오기
+    // URL에서 selectedId 파라미터 가져오기
     const searchParams = new URLSearchParams(window.location.search);
-    const newIdParam = searchParams.get("selected_Id");
-    console.log(`LOG-- newId ${newIdParam}`);
-    if (newIdParam) {
-      setNewId(newIdParam); // URL 파라미터로부터 newId를 추출하여 상태에 저장
+    const selectedId = searchParams.get("selected_Id");
+
+    console.log(
+      `LOG-- URL에서 selectedId 파라미터를 가져왔습니다: ${selectedId}`
+    );
+    if (selectedId) {
+      setSelectedId(selectedId); // URL 파라미터로부터 selectedId를 추출하여 상태에 저장
     }
+  }, []); // 첫 번째 렌더링 시 selectedId를 추출
+  useEffect(() => {
+    if (selectedId) {
+      console.log(`LOG-- selectedId가 설정되었습니다: ${selectedId}`);
+      setLoading(true); // 데이터 로딩 시작
 
-    // newId가 설정되면 Supabase에서 데이터 가져오기
-    if (newId) {
-      const fetchData = async () => {
-        const supabase = createSupbaseClient();
+      const fetchContainerData = async () => {
         try {
-          const { data, error } = await supabase
-            .from("main") // 컨테이너 테이블에서 데이터 조회
-            .select("*")
-            .eq("id", newId)
-            .single(); // newId에 해당하는 한 개의 row만 가져옴
+          const response = await fetch(`/get-row?selectedId=${selectedId}`);
+          const data = await response.json();
 
-          if (error) {
-            console.error(error.message);
+          if (response.ok) {
+            setContainerData(data); // 가져온 데이터를 상태에 저장
+            setError(null); // 에러 초기화
           } else {
-            setContainerData(data); // 컨테이너 데이터 설정
+            throw new Error(data.error || "Error fetching data");
           }
         } catch (error) {
-          console.error("Error fetching data:", error);
+          console.error("LOG-- Fetch error:", error);
+          setError(error.message || "Unexpected error");
+        } finally {
+          setLoading(false); // 로딩 끝
         }
       };
 
-      fetchData(); // 데이터 가져오기 호출
+      fetchContainerData();
     }
-  }, [newId]); // newId가 변경될 때마다 실행
+  }, [selectedId]); // selectedId가 변경될 때마다 데이터 가져오기
 
-  // Back 버튼 클릭 시 newId를 포함하여 /main 페이지로 이동
+  // main 버튼 클릭 시 동작
   const handleBackClick = () => {
+    console.log("LOG-- Main 버튼 클릭됨");
     router.push(`/main`);
   };
 
@@ -84,54 +96,57 @@ export default function ContainerDetailPage() {
             e.currentTarget.style.backgroundColor = "#e94560";
           }}
         >
-          Back
+          Main
         </button>
 
-        {containerData ? (
+        {/* 로딩 상태 처리 */}
+        {loading ? (
+          <p>Loading container details...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : containerData ? (
           <div>
-            <p>
-              <strong style={{ color: "#e94560" }}>Container Number:</strong>{" "}
-              {containerData.containerNumber}
-            </p>
-            <p>
-              <strong style={{ color: "#e94560" }}>Date:</strong>{" "}
-              {containerData.date}
-            </p>
-            <p>
-              <strong style={{ color: "#e94560" }}>Time:</strong>{" "}
-              {containerData.time}
-            </p>
-            <p>
-              <strong style={{ color: "#e94560" }}>In/Out:</strong>{" "}
-              {containerData.inOut}
-            </p>
-            <p>
-              <strong style={{ color: "#e94560" }}>Container Size:</strong>{" "}
-              {containerData.size}
-            </p>
-            <p>
-              <strong style={{ color: "#e94560" }}>Driver Name:</strong>{" "}
-              {containerData.driver}
-            </p>
-
-            {/* 이미지 크기를 더 크게 표시 */}
-            <img
-              src={`https://your-storage-bucket-url/${newId.padStart(
-                3,
-                "0"
-              )}.jpg`} // newId에 따라 이미지 URL 생성
-              alt="Container"
-              className="w-96 h-96 object-cover mt-4" // 이미지 크기를 더 크게
-              style={{
-                border: "1px solid #444",
-                borderRadius: "10px",
-                backgroundColor: "#252539",
-                padding: "8px",
-              }}
-            />
+            <p style={{ color: "#e94560" }}>Container Image</p>
+            {imgURL ? (
+              <img
+                src={imgURL}
+                alt="Container"
+                style={{
+                  maxWidth: "600px", // 가로 최대 크기
+                  maxHeight: "300px", // 세로 최대 크기
+                  width: "100%", // 가로 크기는 100%로 자동 조정
+                  height: "auto", // 세로 크기는 비율에 맞게 자동 조정
+                  objectFit: "contain", // 이미지 비율 유지, 잘리지 않도록 함
+                  borderRadius: "8px",
+                  border: "2px solid #444",
+                }}
+              />
+            ) : (
+              <p>Loading image...</p> // 이미지 로딩 중에는 대체 텍스트 표시
+            )}
+            <div style={{ marginTop: "20px" }}>
+              <p>
+                <strong>Container Number:</strong> {containerData.cntr_number}
+              </p>
+              <p>
+                <strong>Date:</strong> {containerData.date}
+              </p>
+              <p>
+                <strong>Time:</strong> {containerData.time}
+              </p>
+              <p>
+                <strong>In/Out:</strong> {containerData.in_out ? "In" : "Out"}
+              </p>
+              <p>
+                <strong>Size:</strong> {containerData.cntr_size}
+              </p>
+              <p>
+                <strong>Driver Name:</strong> {containerData.driver_name}
+              </p>
+            </div>
           </div>
         ) : (
-          <p>Loading data...</p>
+          <p>No data found for this container.</p>
         )}
       </div>
     </div>

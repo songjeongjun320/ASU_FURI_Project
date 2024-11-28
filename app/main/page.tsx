@@ -117,7 +117,7 @@ export default function MainPage() {
 
   const handleRowClick = (selected_id: string) => {
     console.log("LOG-- Row clicked, selected container id:", selected_id);
-    router.push(`/cntr_detail?newId=${encodeURIComponent(selected_id)}`);
+    router.push(`/cntr_detail?selected_Id=${encodeURIComponent(selected_id)}`);
   };
 
   // Back 버튼 핸들러
