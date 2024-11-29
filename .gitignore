@@ -37,6 +37,7 @@ next-env.d.ts
 
 # json
 *.json
+!tsconfig.json
 
 # dataset files
 *.yaml
