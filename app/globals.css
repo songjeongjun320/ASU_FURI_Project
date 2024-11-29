@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* global.css */
-
-/* 기본 스타일 초기화 */
 *,
 *::before,
 *::after {
