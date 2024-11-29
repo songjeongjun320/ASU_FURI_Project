@@ -48,6 +48,7 @@ export default function Home() {
     setSelectedVideo(null);
     setDriverName("");
   };
+
   // Back 버튼 핸들러
   const handleMain = () => {
     router.push("/main"); // 루트 페이지로 이동
@@ -110,86 +111,21 @@ export default function Home() {
   };
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        fontFamily: "Roboto, sans-serif",
-        backgroundColor: "#1a1a2e",
-        minHeight: "100vh",
-        color: "#ffffff",
-        lineHeight: "1.6",
-      }}
-    >
+    <div className="container">
+      <h1 className="title">Yard Management System Prototype</h1>
       {/* Back 버튼 추가 */}
-      <button
-        onClick={handleMain}
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "20px",
-          backgroundColor: "#e94560",
-          color: "#ffffff",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-        }}
-      >
+      <button onClick={handleMain} className="button-back">
         Main
       </button>
-      <h1
-        style={{
-          textAlign: "center",
-          marginBottom: "30px",
-          fontSize: "32px",
-          fontWeight: "700",
-          color: "#e94560",
-        }}
-      >
-        Yard Management System Prototype
-      </h1>
-      <div
-        style={{
-          display: "flex",
-          gap: "30px",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          style={{
-            flex: 1.5,
-            padding: "20px",
-            border: "1px solid #333",
-            borderRadius: "12px",
-            backgroundColor: "#161625",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-            maxHeight: "520px",
-            overflowY: "auto",
-          }}
-        >
-          <h2
-            style={{
-              marginBottom: "20px",
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#e94560",
-            }}
-          >
-            Available Videos
-          </h2>
+      <div className="video-container" style={{ justifyContent: "flex-start" }}>
+        <div className="card">
+          <h2 className="card-header">Available Videos</h2>
           {loading ? (
-            <p style={{ fontStyle: "italic", color: "#999" }}>
-              Loading videos...
-            </p>
+            <p className="italic text-gray-500">Loading videos...</p>
           ) : videos.length > 0 ? (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "20px",
-              }}
-            >
+            <div className="flex flex-col gap-5 overflow-y-auto max-h-[400px]">
+              {" "}
+              {/* 여기에 max-height와 overflow 적용 */}
               {videos.map((video) => {
                 const videoURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/sample_videos/${video.name}`;
                 return (
@@ -197,32 +133,9 @@ export default function Home() {
                     key={video.name}
                     draggable
                     onDragStart={(e) => handleDragStart(e, video)}
-                    style={{
-                      padding: "15px",
-                      border: "1px solid #444",
-                      borderRadius: "10px",
-                      backgroundColor: "#252539",
-                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-                      cursor: "grab",
-                      transition: "transform 0.2s ease",
-                    }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.transform = "scale(1.05)")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.transform = "scale(1)")
-                    }
+                    className="video-item"
                   >
-                    <h4
-                      style={{
-                        marginBottom: "10px",
-                        textAlign: "center",
-                        fontSize: "16px",
-                        color: "#fff",
-                      }}
-                    >
-                      {video.name}
-                    </h4>
+                    <h4 className="text-center text-white">{video.name}</h4>
                     <video controls width="100%">
                       <source src={videoURL} type="video/mp4" />
                       Your browser does not support the video tag.
@@ -232,157 +145,49 @@ export default function Home() {
               })}
             </div>
           ) : (
-            <p style={{ color: "#bbb" }}>No videos found.</p>
+            <p className="text-gray-400">No videos found.</p>
           )}
         </div>
 
-        <div
-          style={{
-            flex: 1.5,
-            padding: "20px",
-            border: "1px solid #333",
-            borderRadius: "12px",
-            backgroundColor: "#161625",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-          }}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-        >
-          <h2
-            style={{
-              marginBottom: "30px",
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#e94560",
-            }}
-          >
-            Selected Video
-          </h2>
+        <div className="card" onDrop={handleDrop} onDragOver={handleDragOver}>
+          <h2 className="card-header">Selected Video</h2>
           {selectedVideo ? (
-            <div
-              style={{
-                padding: "20px",
-                border: "1px solid #444",
-                borderRadius: "10px",
-                backgroundColor: "#252539",
-                marginBottom: "20px",
-              }}
-            >
-              <h4 style={{ color: "#fff" }}>{selectedVideo.name}</h4>
+            <div className="video-item">
+              <h4 className="text-white">{selectedVideo.name}</h4>
             </div>
           ) : (
-            <p
-              style={{
-                color: "#bbb",
-                fontStyle: "italic",
-                marginBottom: "20px",
-              }}
-            >
-              Drag and drop a video here
-            </p>
+            <p className="text-gray-400 italic">Drag and drop a video here</p>
           )}
-          <div style={{ marginBottom: "20px" }}>
+
+          <div className="my-4">
             <input
               type="text"
               placeholder="Driver Name"
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "15px",
-                height: "40px",
-                borderRadius: "8px",
-                border: "1px solid #444",
-                backgroundColor: "#252539",
-                color: "#fff",
-              }}
+              className="input-field"
             />
           </div>
-          <div style={{ display: "flex", gap: "15px" }}>
+
+          <div className="flex gap-4">
             {isLoading ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "50px",
-                  height: "50px",
-                  border: "5px solid #555",
-                  borderTop: "5px solid #e94560",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
-                }}
-              ></div>
+              <div className="spinner"></div>
             ) : (
-              <>
-                <button
-                  onClick={handleExtractClick}
-                  style={{
-                    padding: "12px 20px",
-                    backgroundColor: "#e94560",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#c0394a")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#e94560")
-                  }
-                >
-                  Extract Container Information
-                </button>
-              </>
+              <button onClick={handleExtractClick} className="button">
+                Extract Container Information
+              </button>
             )}
-            <button
-              onClick={handleCancelClick}
-              style={{
-                padding: "12px 20px",
-                backgroundColor: "#f15a24",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                fontWeight: "600",
-                cursor: "pointer",
-                transition: "background-color 0.3s ease",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#d14927")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#f15a24")
-              }
-            >
+            <button onClick={handleCancelClick} className="button-cancel">
               Cancel
             </button>
           </div>
-          <div
-            style={{
-              marginTop: "30px",
-              padding: "20px",
-              border: "1px solid #333",
-              borderRadius: "12px",
-              backgroundColor: "#161625",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-              color: "#ddd",
-              lineHeight: "1.6",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "24px",
-                marginBottom: "10px",
-                fontWeight: "700",
-                color: "#e94560",
-              }}
-            >
+
+          {/* About This Project 부분을 여기로 이동 */}
+          <div className="card mt-10">
+            <h2 className="text-2xl font-bold text-red-500">
               About This Project
             </h2>
-            <p style={{ fontSize: "18px", marginBottom: "10px" }}>
+            <p className="text-lg">
               This prototype is part of the <b>Yard Management System</b>{" "}
               automation project in the transportation industry. Users can
               select a video and drop it into the designated box. The selected
@@ -395,28 +200,13 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div
-        style={{
-          marginTop: "30px",
-          padding: "20px",
-          border: "1px solid #333",
-          borderRadius: "12px",
-          backgroundColor: "#161625",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-          color: "#ddd",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "24px",
-            marginBottom: "10px",
-            fontWeight: "700",
-            color: "#e94560",
-          }}
-        >
-          How can you test?
-        </h2>
-        <p>
+
+      <div className="card mt-10">
+        <h1 className="text-4xl font-bold text-red-500">How can you test?</h1>{" "}
+        {/* 글자 크기 4xl로 수정 */}
+        <p className="text-lg">
+          {" "}
+          {/* 기본 크기를 lg로 수정, 필요에 따라 조정 */}
           <b>1.</b> Choose a sample video showing a truck's movement with a
           container.
           <br />

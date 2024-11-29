@@ -4,43 +4,233 @@
 
 /* global.css */
 
-/* Maroon and Gold color scheme */
-:root {
-  --color-maroon: #800000;
-  --color-maroon-dark: #6e0000;
-  --color-gold: #ffd700;
-  --color-gold-dark: #e6c200;
+/* 기본 스타일 초기화 */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Input field styling */
+html,
+body {
+  height: 100%;
+  font-family: "Roboto", sans-serif;
+  background-color: #1a1a2e;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+/* 공통 스타일 */
+body {
+  min-height: 100vh;
+  overflow-x: hidden; /* 수평 스크롤 방지 */
+  padding: 0 20px;
+}
+
+.container {
+  max-width: 1500px; /* 원하는 최대 너비로 조정 */
+  margin: 0 auto; /* 좌우 여백을 자동으로 설정하여 가운데 정렬 */
+  padding: 20px;
+  background-color: #1a1a2e;
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #e94560;
+}
+
+/* 버튼 스타일 */
+.button,
+.button-back,
+.button-cancel,
+.pagination-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.button {
+  background-color: #e94560;
+  color: #fff;
+}
+
+.button:hover {
+  background-color: #c0394a;
+  transform: scale(1.05);
+}
+
+.button:disabled {
+  background-color: #555555;
+  cursor: not-allowed;
+}
+
+.button-back {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: #e94560;
+  color: #fff;
+  font-size: 14px;
+}
+
+.button-back:hover {
+  transform: scale(1.05);
+}
+
+.button-cancel {
+  background-color: #f15a24;
+  color: #fff;
+}
+
+.button-cancel:hover {
+  background-color: #d14927;
+  transform: scale(1.05);
+}
+
+.pagination-button {
+  background-color: #e94560;
+  color: #fff;
+}
+
+.pagination-button:hover {
+  background-color: #c0394a;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 테이블 스타일 */
+.table-row {
+  cursor: pointer;
+  background-color: #252539;
+}
+
+.table-row:hover {
+  background-color: #343a40;
+}
+
+.table-cell {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: left;
+  color: #ffffff;
+}
+
+.table-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* 레이아웃 스타일 */
+.video-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.card {
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background-color: #161625;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #e94560;
+}
+
+.video-item {
+  padding: 15px;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background-color: #252539;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.video-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+}
+
+.video-item h4 {
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 16px;
+  color: #fff;
+}
+
+/* 입력 필드 스타일 */
 .input-field {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--color-gold)] focus:border-[var(--color-gold)] sm:text-sm;
+  width: 100%;
+  padding: 15px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #252539;
+  color: #fff;
 }
 
-/* Primary button (Maroon background) */
-.btn-primary {
-  @apply w-full bg-[var(--color-maroon)] text-white font-semibold py-2 px-4 rounded-md hover:bg-[var(--color-maroon-dark)] transition duration-300;
+/* 로딩 스피너 */
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #555;
+  border-top: 5px solid #e94560;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-/* Secondary button (Gold background) */
-.btn-secondary {
-  @apply w-full bg-[var(--color-gold)] text-[var(--color-maroon)] font-semibold py-2 px-4 rounded-md hover:bg-[var(--color-gold-dark)] transition duration-300;
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Link styling (Maroon color) */
-.link-maroon {
-  @apply text-[var(--color-maroon)] hover:underline;
+/* global.css */
+
+.text-e94560 {
+  color: #e94560;
 }
 
-/* Popup styles */
-.popup-container {
-  @apply fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center;
+.container-img {
+  max-width: 800px;
+  max-height: 800px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 2px solid #444;
 }
 
-.popup-content {
-  @apply bg-white rounded-lg p-6 max-w-sm w-full shadow-lg;
-}
-
-.popup-input {
-  @apply block w-full px-3 py-2 mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--color-gold)] focus:border-[var(--color-gold)];
+.container-data {
+  font-size: 30px;
+  padding-top: 30px;
 }
